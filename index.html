@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Casual Code Studios — A premier web development agency based in Nyeri, Kenya. We build e-commerce websites, portfolios, landing pages, and offer short courses in HTML, CSS & JavaScript.">
+  <title>Casual Code Studios — Web Agency</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-ring"></div>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav" id="mainNav">
+    <a href="index.html" class="nav-logo">Casual <span>_Code_</span> Studios</a>
+    <ul class="nav-links">
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" title="Toggle theme">☀️</button>
+      <a href="blog.html" class="btn-nav show-if-logged-out">Join Community</a>
+      <span class="show-if-logged-in" style="display:none">
+        <button class="btn-nav logout-btn" style="background:transparent;color:var(--red);border-color:var(--red)">
+          Hi, <span class="user-display-name"></span> · Logout
+        </button>
+      </span>
+      <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="nav-drawer">
+    <a href="index.html">Home</a>
+    <a href="about.html">About & Work</a>
+    <a href="blog.html">Blog</a>
+    <a href="#services">Services</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#hire">Hire Us</a>
+    <button class="btn show-if-logged-out btn-primary" onclick="openModal('loginModal')" style="margin-top:16px">Join Community</button>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid-lines"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-eyebrow">Nyeri, Kenya · Est. 2024</div>
+        <h1 class="hero-h1">
+          We are,<br>
+          <span class="brand-name">Casual</span><br>
+          <span class="brand-name"><span class="underscore">. code .</span></span><br>
+          <span class="brand-name">Studios</span>
+        </h1>
+        <p class="hero-tagline">
+          A frontend web development agency crafting e-commerce stores, portfolios, landing pages, and digital experiences that actually convert — built with HTML, CSS, JavaScript & AI.
+        </p>
+        <div class="typing-row">
+          <span class="typing-prefix">// We are:</span>
+          <span class="typing-text" id="typingHero"></span><span class="typing-cursor"></span>
+        </div>
+        <div class="hero-cta">
+          <a href="#hire" class="btn btn-primary"><img src="project-launch.png" alt="rocket"> Start a Project</a>
+          <a href="about.html" class="btn btn-outline">View Our Work</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-num" data-count="12" data-suffix="+">0+</div>
+            <div class="stat-label">Projects Shipped</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" data-count="100" data-suffix="%">0%</div>
+            <div class="stat-label">Client Satisfaction</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" data-count="3" data-suffix=" langs">0</div>
+            <div class="stat-label">Core Languages</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-blob"></div>
+        <div class="hero-code-window">
+          <div class="code-window-bar">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="code-filename">ccs-project.html</span>
+          </div>
+          <div class="code-body">
+            <div class="code-line"><span class="code-ln">1</span><span><span class="cmt">&lt;!-- Casual Code Studios --&gt;</span></span></div>
+            <div class="code-line"><span class="code-ln">2</span><span><span class="kw">&lt;section</span> <span class="prop">class</span><span class="punc">=</span><span class="str">"hero"</span><span class="kw">&gt;</span></span></div>
+            <div class="code-line"><span class="code-ln">3</span><span>&nbsp;&nbsp;<span class="kw">&lt;h1</span> <span class="prop">class</span><span class="punc">=</span><span class="str">"big-title"</span><span class="kw">&gt;</span></span></div>
+            <div class="code-line"><span class="code-ln">4</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">Casual _Code_ Studios</span></span></div>
+            <div class="code-line"><span class="code-ln">5</span><span>&nbsp;&nbsp;<span class="kw">&lt;/h1&gt;</span></span></div>
+            <div class="code-line"><span class="code-ln">6</span><span>&nbsp;&nbsp;<span class="kw">&lt;p&gt;</span><span class="str">We build the web</span><span class="kw">&lt;/p&gt;</span></span></div>
+            <div class="code-line"><span class="code-ln">7</span><span><span class="kw">&lt;/section&gt;</span></span></div>
+            <div class="code-line"><span class="code-ln">8</span><span></span></div>
+            <div class="code-line"><span class="code-ln">9</span><span><span class="cmt">/* CSS magic ✨ */</span></span></div>
+            <div class="code-line"><span class="code-ln">10</span><span><span class="fn">.hero</span> <span class="punc">{</span></span></div>
+            <div class="code-line"><span class="code-ln">11</span><span>&nbsp;&nbsp;<span class="prop">background</span><span class="punc">:</span> <span class="val">var(--red)</span><span class="punc">;</span></span></div>
+            <div class="code-line"><span class="code-ln">12</span><span>&nbsp;&nbsp;<span class="prop">min-height</span><span class="punc">:</span> <span class="str">100vh</span><span class="punc">;</span></span></div>
+            <div class="code-line"><span class="code-ln">13</span><span><span class="punc">}</span></span></div>
+          </div>
+        </div>
+        <div class="hero-float-card card-1">
+          <span class="hero-float-icon">✓</span>
+          <span class="green">Live:</span>&nbsp;sunrise-valley-farms.vercel.app
+        </div>
+        
+        <div class="hero-float-card card-2">
+          <span class="hero-float-icon red">🔴</span>
+          <span>CUSTOM BUILDS ---</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TOOLS STRIP ===== -->
+  <div class="tools-strip">
+    <div class="tools-strip-inner">
+      <a href="https://code.visualstudio.com" target="_blank" class="tool-item"><img src="vs-code.png" alt="VS Code"> VS Code</a>
+      <a href="https://figma.com" target="_blank" class="tool-item"><img src="figma.jpg" alt="Figma"> Figma</a>
+      <a href="https://unsplash.com" target="_blank" class="tool-item"><img src="unsplash.jpg" alt="Unsplash"> Unsplash</a>
+      <a href="https://pinterest.com" target="_blank" class="tool-item"><img src="pinterest.jpg" alt="Pinterest"> Pinterest</a>
+      <a href="https://flaticon.com" target="_blank" class="tool-item"><img src="flaticon.jpg" alt="Flaticon"> Flaticon</a>
+      <a href="https://www.adobe.com/products/illustrator.html" target="_blank" class="tool-item"><img src="adobe illustrator.jpg" alt="Adobe Illustrator"> Adobe Illustrator</a>
+      <a href="https://meet.google.com" target="_blank" class="tool-item"><img src="google-logo.jpg" alt="Google Meet"> Google Meet</a>
+      <a href="https://google.com" target="_blank" class="tool-item"><img src="google-logo.jpg" alt="Google"> Google</a>
+      <a href="https://bing.com" target="_blank" class="tool-item"><img src="microsoft bing.jpg" alt="Bing"> Bing</a>
+      <a href="https://www.microsoft.com/en-us/edge" target="_blank" class="tool-item"><img src="microsoft-edge.jpg" alt="MS Edge"> MS Edge</a>
+      <a href="https://anthropic.com" target="_blank" class="tool-item"><img src="claude-ai.jpg" alt="Claude AI"> Claude AI</a>
+      <a href="https://github.com" target="_blank" class="tool-item"><img src="github.jpg" alt="GitHub"> GitHub</a>
+      <a href="https://chat.openai.com" target="_blank" class="tool-item"><img src="chat-gpt.jpg" alt="ChatGPT"> ChatGPT</a>
+      <!-- duplicate for infinite scroll -->
+      <a href="https://code.visualstudio.com" target="_blank" class="tool-item"><img src="vs-code.png" alt="VS Code"> VS Code</a>
+      <a href="https://figma.com" target="_blank" class="tool-item"><img src="figma.jpg" alt="Figma"> Figma</a>
+      <a href="https://unsplash.com" target="_blank" class="tool-item"><img src="unsplash.jpg" alt="Unsplash"> Unsplash</a>
+      <a href="https://pinterest.com" target="_blank" class="tool-item"><img src="pinterest.jpg" alt="Pinterest"> Pinterest</a>
+      <a href="https://flaticon.com" target="_blank" class="tool-item"><img src="flaticon.jpg" alt="Flaticon"> Flaticon</a>
+      <a href="https://www.adobe.com/products/illustrator.html" target="_blank" class="tool-item"><img src="adobe_illustrator.jpg" alt="Adobe Illustrator"> Adobe Illustrator</a>
+      <a href="https://meet.google.com" target="_blank" class="tool-item"><img src="google-logo.jpg" alt="Google Meet"> Google Meet</a>
+      <a href="https://google.com" target="_blank" class="tool-item"><img src="google-logo.jpg" alt="Google"> Google</a>
+      <a href="https://bing.com" target="_blank" class="tool-item"><img src="microsoft_bing.jpg" alt="Bing"> Bing</a>
+      <a href="https://www.microsoft.com/en-us/edge" target="_blank" class="tool-item"><img src="microsoft-edge.jpg" alt="MS Edge"> MS Edge</a>
+      <a href="https://anthropic.com" target="_blank" class="tool-item"><img src="claude-ai.jpg" alt="Claude AI"> Claude AI</a>
+      <a href="https://github.com" target="_blank" class="tool-item"><img src="github.jpg" alt="GitHub"> GitHub</a>
+      <a href="https://chat.openai.com" target="_blank" class="tool-item"><img src="chat-gpt.jpg" alt="ChatGPT"> ChatGPT</a>
+    </div>
+  </div>
+
+  <!-- ===== SERVICES ===== -->
+  <section class="services-section" id="services">
+    <div class="section-header reveal">
+      <div class="section-tag">What We Do</div>
+      <h2 class="section-title">We Build the <span>Whole Thing</span></h2>
+      <p class="section-sub">From concept to launch, we handle every pixel and every line of code — with a side of fun.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal d1">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80" alt="E-Commerce">
+        <div class="service-card-body">
+          <span class="service-icon">🛒</span>
+          <h3>E-Commerce Development</h3>
+          <p>Full online store builds with product listings, cart systems, checkout flows, and payment integrations. Your shop, open 24/7.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d2">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&q=80" alt="Portfolio">
+        <div class="service-card-body">
+          <h3>Portfolio Websites</h3>
+          <p>Stunning personal and professional portfolios that showcase your work and make recruiters stop scrolling.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d3">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&q=80" alt="Landing Pages">
+        <div class="service-card-body">
+          <h3>Landing Pages</h3>
+          <p>High-converting landing pages built for speed, clarity, and action. Get more leads, more signups, more sales.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d1">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80" alt="Redesign">
+        <div class="service-card-body">
+          <h3>Website Redesign</h3>
+          <p>Your old website is embarrassing you? We redesign and rebuild it into something you're actually proud to share.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d2">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80" alt="AI Development">
+        <div class="service-card-body">
+          <h3>AI-Enhanced Development</h3>
+          <p>We leverage AI tools for faster research, smarter design choices, and optimized code — your project ships faster.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d3">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80" alt="Courses">
+        <div class="service-card-body">
+          <h3>Web Dev Short Courses</h3>
+          <p>Beginner-friendly HTML, CSS & JavaScript courses. Learn to code the CCS way — practical, fun, and no fluff.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d1">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80" alt="Business Websites">
+        <div class="service-card-body">
+          <h3>Business Websites</h3>
+          <p>Professional multi-page sites for businesses, clinics, NGOs, churches, and service providers of all kinds.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d2">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80" alt="Responsive Design">
+        <div class="service-card-body">
+          <h3>Responsive Design</h3>
+          <p>Every site we build works flawlessly on phones, tablets, and desktops. Mobile-first is not a feature — it's our standard.</p>
+        </div>
+      </div>
+      <div class="service-card reveal d3">
+        <img class="service-card-img" src="https://images.unsplash.com/photo-1555066931-4365d14431b9?w=600&q=80" alt="Website Cloning">
+        <div class="service-card-body">
+          <span class="service-icon">🧬</span>
+          <h3>Website Cloning</h3>
+          <p>Need a site similar to an existing one? We replicate layouts and features while keeping it entirely original and legal.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECT HIGHLIGHTS ===== -->
+  <section class="projects-home">
+    <div class="section-header reveal">
+      <div class="section-tag">Recent Work</div>
+      <h2 class="section-title">Projects We're <span>Proud Of</span></h2>
+      <p class="section-sub">A taste of what we've built. Full portfolio on the about page.</p>
+    </div>
+    <div class="projects-home-grid">
+      <div class="project-card reveal d1">
+        <div class="project-img-wrap">
+          <div class="project-img-placeholder">🌾</div>
+          <div class="project-overlay">
+            <a href="https://sunrise-valley-farms.vercel.app/" target="_blank">View Live →</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="project-tag">E-Commerce</span>
+            <span class="project-tag">HTML/CSS</span>
+          </div>
+          <h3>SunRise Valley Farms</h3>
+          <p>A farm-fresh e-commerce site connecting Kenyan farmers to conscious consumers. Clean, wholesome, and built to sell.</p>
+          <a href="https://sunrise-valley-farms.vercel.app/" target="_blank" class="project-link">Visit site →</a>
+        </div>
+      </div>
+      <div class="project-card reveal d2">
+        <div class="project-img-wrap">
+          <div class="project-img-placeholder">👗</div>
+          <div class="project-overlay">
+            <a href="https://bemilwis-umber.vercel.app/" target="_blank">View Live →</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="project-tag">Boutique</span>
+            <span class="project-tag">Under Dev</span>
+          </div>
+          <h3>Bemilwis Boutique</h3>
+          <p>A curated fashion boutique featuring shoes and stylish clothing. Elegance meets digital commerce.</p>
+          <a href="https://bemilwis-umber.vercel.app/" target="_blank" class="project-link">Visit site →</a>
+        </div>
+      </div>
+      <div class="project-card reveal d3">
+        <div class="project-img-wrap">
+          <div class="project-img-placeholder">🚗</div>
+          <div class="project-overlay">
+            <a href="https://de-tow.vercel.app/" target="_blank">View Live →</a>
+          </div>
+        </div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="project-tag">Service</span>
+            <span class="project-tag">Under Dev</span>
+          </div>
+          <h3>De-Tow Services</h3>
+          <p>Reliable roadside assistance and vehicle recovery services. Built for trust, speed, and confidence on the road.</p>
+          <a href="https://de-tow.vercel.app/" target="_blank" class="project-link">Visit site →</a>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:48px">
+      <a href="about.html" class="btn btn-outline reveal">See All Projects →</a>
+    </div>
+  </section>
+
+  <!-- ===== COURSES ===== -->
+  <section class="courses-section">
+    <div class="section-header reveal">
+      <div class="section-tag">Learn With CCS</div>
+      <h2 class="section-title">Short Courses for <span>Beginners</span></h2>
+      <p class="section-sub">Start your web development journey with us. No prior experience needed.</p>
+    </div>
+    <div class="courses-grid">
+      <div class="course-card reveal d1">
+        <div class="course-icon">📄</div>
+        <span class="badge badge-green course-level">Beginner</span>
+        <h3>HTML Fundamentals</h3>
+        <p>Learn the backbone of the web. Structure pages, use semantic elements, and understand how browsers work.</p>
+        <div class="course-meta">
+          <span>⏱ 2 Weeks</span>
+          <span>📋 12 Lessons</span>
+          <span>🆓 Free</span>
+        </div>
+      </div>
+      <div class="course-card reveal d2">
+        <div class="course-icon">🎨</div>
+        <span class="badge badge-yellow course-level">Beginner+</span>
+        <h3>CSS & Design Basics</h3>
+        <p>Style your pages beautifully. Master flexbox, grid, animations, and responsive design from scratch.</p>
+        <div class="course-meta">
+          <span>⏱ 3 Weeks</span>
+          <span>📋 18 Lessons</span>
+          <span>🆓 Free</span>
+        </div>
+      </div>
+      <div class="course-card reveal d3">
+        <div class="course-icon">⚡</div>
+        <span class="badge badge-red course-level">Intermediate</span>
+        <h3>JavaScript Essentials</h3>
+        <p>Bring your pages to life. DOM manipulation, events, fetch API, and your first interactive projects.</p>
+        <div class="course-meta">
+          <span>⏱ 4 Weeks</span>
+          <span>📋 24 Lessons</span>
+          <span>💰 KSH 500</span>
+        </div>
+      </div>
+      <div class="course-card reveal d4">
+        <div class="course-icon">🚀</div>
+        <span class="badge badge-red course-level">Advanced</span>
+        <h3>Full Frontend Bootcamp</h3>
+        <p>Complete HTML + CSS + JS package with a real project portfolio to show employers and clients.</p>
+        <div class="course-meta">
+          <span>⏱ 10 Weeks</span>
+          <span>📋 60 Lessons</span>
+          <span>💰 KSH 1,500</span>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:40px">
+      <button class="btn btn-primary reveal" onclick="openModal('hireModal')">📚 Enroll Now</button>
+    </div>
+  </section>
+
+  <!-- ===== PRICING ===== -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-header reveal">
+      <div class="section-tag">Transparent Pricing</div>
+      <h2 class="section-title">Simple, <span>Honest</span> Plans</h2>
+      <p class="section-sub">No hidden fees. No surprises. Just great work at fair prices.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal d1">
+        <div class="pricing-plan">Starter</div>
+        <div class="pricing-price">KSH <span></span>8K</div>
+        <div class="pricing-period">One-time project fee</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="check">✓</span> Single-page website</div>
+        <div class="pricing-feature"><span class="check">✓</span> Responsive design</div>
+        <div class="pricing-feature"><span class="check">✓</span> Contact form</div>
+        <div class="pricing-feature"><span class="check">✓</span> 2 revision rounds</div>
+        <div class="pricing-feature"><span class="cross">✗</span> CMS integration</div>
+        <div class="pricing-feature"><span class="cross">✗</span> E-commerce features</div>
+        <a href="#hire" class="pricing-cta btn-outline" style="border:1px solid var(--border);text-align:center;border-radius:50px;font-family:var(--font-mono);font-size:14px;transition:all .3s">Get Started</a>
+      </div>
+
+      <div class="pricing-card featured reveal d2">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-plan">Agency</div>
+        <div class="pricing-price">KSH <span></span>20K</div>
+        <div class="pricing-period">One-time project fee</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="check">✓</span> Multi-page website (up to 6)</div>
+        <div class="pricing-feature"><span class="check">✓</span> Fully responsive</div>
+        <div class="pricing-feature"><span class="check">✓</span> Custom animations</div>
+        <div class="pricing-feature"><span class="check">✓</span> Contact + inquiry forms</div>
+        <div class="pricing-feature"><span class="check">✓</span> SEO optimization</div>
+        <div class="pricing-feature"><span class="check">✓</span> Unlimited revisions (1 month)</div>
+        <a href="#hire" class="pricing-cta btn-primary" style="background:var(--red);color:#fff;text-align:center;border-radius:50px;font-family:var(--font-mono);font-size:14px;transition:all .3s">Start Project</a>
+      </div>
+
+      <div class="pricing-card reveal d3">
+        <div class="pricing-plan">Enterprise</div>
+        <div class="pricing-price">KSH <span></span>50K+</div>
+        <div class="pricing-period">Custom quote</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="check">✓</span> Full e-commerce platform</div>
+        <div class="pricing-feature"><span class="check">✓</span> Payment integration</div>
+        <div class="pricing-feature"><span class="check">✓</span> Admin dashboard</div>
+        <div class="pricing-feature"><span class="check">✓</span> AI-assisted features</div>
+        <div class="pricing-feature"><span class="check">✓</span> Ongoing support (3 months)</div>
+        <div class="pricing-feature"><span class="check">✓</span> Priority delivery</div>
+        <a href="#hire" class="pricing-cta btn-outline" style="border:1px solid var(--border);text-align:center;border-radius:50px;font-family:var(--font-mono);font-size:14px;transition:all .3s">Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SOCIAL TOOLS LOGOS ===== -->
+  <section class="tools-section">
+    <div class="section-header reveal">
+      <div class="section-tag">Our Toolkit</div>
+      <h2 class="section-title">Tools & <span>Platforms We Love</span></h2>
+      <p class="section-sub">Every tool we use is there for a reason — to make your project better.</p>
+    </div>
+    <div class="tools-logos-grid">
+      <a href="https://code.visualstudio.com" target="_blank" class="tool-logo-card reveal d1">
+        <img class="tool-img" src="vs-code.png" alt="VS Code"><span class="label">VS Code</span>
+      </a>
+      <a href="https://www.microsoft.com/en-us/edge" target="_blank" class="tool-logo-card reveal d2">
+        <img class="tool-img" src="microsoft-edge.jpg" alt="MS Edge"><span class="label">MS Edge</span>
+      </a>
+      <a href="https://figma.com" target="_blank" class="tool-logo-card reveal d3">
+        <img class="tool-img" src="figma.jpg" alt="Figma"><span class="label">Figma</span>
+      </a>
+      <a href="https://www.adobe.com/products/illustrator.html" target="_blank" class="tool-logo-card reveal d4">
+        <img class="tool-img" src="adobe illustrator.jpg" alt="Adobe Illustrator"><span class="label">Adobe Illustrator</span>
+      </a>
+      <a href="https://meet.google.com" target="_blank" class="tool-logo-card reveal d1">
+        <img class="tool-img" src="google-logo.jpg" alt="Google Meet"><span class="label">Google Meet</span>
+      </a>
+      <a href="https://unsplash.com" target="_blank" class="tool-logo-card reveal d2">
+        <img class="tool-img" src="unsplash.jpg" alt="Unsplash"><span class="label">Unsplash</span>
+      </a>
+      <a href="https://pinterest.com" target="_blank" class="tool-logo-card reveal d3">
+        <img class="tool-img" src="pinterest.jpg" alt="Pinterest"><span class="label">Pinterest</span>
+      </a>
+      <a href="https://flaticon.com" target="_blank" class="tool-logo-card reveal d4">
+        <img class="tool-img" src="flaticon.jpg" alt="Flaticon"><span class="label">Flaticon</span>
+      </a>
+      <a href="https://google.com" target="_blank" class="tool-logo-card reveal d1">
+        <img class="tool-img" src="google-logo.jpg" alt="Google"><span class="label">Google Search</span>
+      </a>
+      <a href="https://bing.com" target="_blank" class="tool-logo-card reveal d2">
+        <img class="tool-img" src="microsoft bing.jpg" alt="Bing"><span class="label">Microsoft Bing</span>
+      </a>
+      <a href="https://anthropic.com" target="_blank" class="tool-logo-card reveal d3">
+        <img class="tool-img" src="claude-ai.jpg" alt="Claude AI"><span class="label">Claude AI</span>
+      </a>
+      <a href="https://github.com" target="_blank" class="tool-logo-card reveal d4">
+        <img class="tool-img" src="github.jpg" alt="GitHub"><span class="label">GitHub</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials-section">
+    <div class="section-header reveal">
+      <div class="section-tag">Happy Clients</div>
+      <h2 class="section-title">They Said <span>That</span>, Not Us</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal d1">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Edgar built our farm website from scratch and we've been getting orders from all over Nyeri since launch. The site looks professional but feels warm. Exactly what we wanted.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JM</div>
+          <div>
+            <div class="testi-name">James Mwangi</div>
+            <div class="testi-role">SunRise Valley Farms</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d2">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Casual Code Studios redesigned our boutique's online presence. We went from zero online visibility to consistent weekly sales. Their attention to detail is just different.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">BW</div>
+          <div>
+            <div class="testi-name">Beatrice Wanjiru</div>
+            <div class="testi-role">Bemilwis Boutique</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d3">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">I enrolled in the HTML course knowing absolutely nothing. Three weeks later I built my first webpage. CCS doesn't just teach — they make you fall in love with coding.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SK</div>
+          <div>
+            <div class="testi-name">Samuel Kamau</div>
+            <div class="testi-role">Student, HTML Course</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA BANNER ===== -->
+  <section class="cta-banner">
+    <h2>Ready to Build Something<br>That Actually Works?</h2>
+    <p>Tell us your idea. We'll turn it into a website you'll be proud to share.</p>
+    <a href="#hire" class="btn-white">Start Your Project Today →</a>
+  </section>
+
+  <!-- ===== HIRE / CONTACT ===== -->
+  <section class="hire-section" id="hire">
+    <div class="hire-grid">
+      <div class="hire-info reveal-left">
+        <div class="section-tag">Get In Touch</div>
+        <h2>Let's Build Something<br><span style="color:var(--red)">Great Together</span></h2>
+        <p>Whether you have a detailed brief or just an idea scribbled on a napkin, we're ready to help. Drop us a message and let's chat.</p>
+        <div class="hire-contact-item">
+          <div class="hire-contact-icon"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/phone.svg" alt="phone" onerror="this.parentElement.textContent='📞'">
+          </div>
+          <div>
+            <div>+254-111-760-757</div>
+            <div style="color:var(--text-muted);font-size:13px">+254-745-845-976</div>
+          </div>
+        </div>
+        <div class="hire-contact-item">
+          <div class="hire-contact-icon" style="font-size:18px">📧</div>
+          <div>kongobonface@gmail.com</div>
+        </div>
+        <div class="hire-contact-item">
+          <div class="hire-contact-icon" style="font-size:18px">📍</div>
+          <div>Nyeri, Kenya</div>
+        </div>
+        <div class="hire-contact-item" style="margin-top:8px">
+          <div class="hire-contact-icon" style="font-size:18px">💬</div>
+          <a href="https://wa.me/254111760757" target="_blank" style="color:var(--red)">Chat on WhatsApp →</a>
+        </div>
+        <!-- Social Links with images -->
+        <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap">
+          <a href="https://github.com" target="_blank" class="footer-social-btn" title="GitHub"><img src="github.jpg" alt="GitHub"></a>
+          <a href="https://linkedin.com" target="_blank" class="footer-social-btn" title="LinkedIn" style="font-size:18px">💼</a>
+          <a href="https://instagram.com" target="_blank" class="footer-social-btn" title="Instagram" style="font-size:18px">📸</a>
+          <a href="https://youtube.com" target="_blank" class="footer-social-btn" title="YouTube" style="font-size:18px">▶️</a>
+          <a href="https://wa.me/254111760757" target="_blank" class="footer-social-btn" title="WhatsApp" style="font-size:18px">💬</a>
+          <a href="https://facebook.com" target="_blank" class="footer-social-btn" title="Facebook" style="font-size:18px">👥</a>
+        </div>
+      </div>
+      <div class="hire-form-box reveal-right">
+        <h3>Start a Project</h3>
+        <p>Fill in the form and we'll get back to you within 24 hours.</p>
+        <form id="contactForm">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" name="name" class="form-input" placeholder="John Kamau" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-input" placeholder="john@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Phone (optional)</label>
+            <input type="tel" name="phone" class="form-input" placeholder="+254...">
+          </div>
+          <div class="form-group">
+            <label>Project Type</label>
+            <select name="type" class="form-input">
+              <option value="">Select a service...</option>
+              <option>E-Commerce Website</option>
+              <option>Portfolio Website</option>
+              <option>Landing Page</option>
+              <option>Business Website</option>
+              <option>Website Redesign</option>
+              <option>Short Course Enrollment</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tell Us About Your Project</label>
+            <textarea name="message" class="form-input" placeholder="What are you building? Any references? Budget range?"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+            Send Message 🚀
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">Casual <span>_Code_</span> Studios</div>
+        <p>A frontend web development agency from Nyeri, Kenya. We build websites that look incredible and work flawlessly — from concept to launch.</p>
+        <div class="footer-socials">
+          <a href="https://github.com" target="_blank" class="footer-social-btn" title="GitHub"><img src="github.jpg" alt="GitHub"></a>
+          <a href="https://linkedin.com" target="_blank" class="footer-social-btn" title="LinkedIn" style="font-size:18px">💼</a>
+          <a href="https://instagram.com" target="_blank" class="footer-social-btn" title="Instagram" style="font-size:18px">📸</a>
+          <a href="https://youtube.com" target="_blank" class="footer-social-btn" title="YouTube" style="font-size:18px">▶️</a>
+          <a href="https://wa.me/254111760757" target="_blank" class="footer-social-btn" title="WhatsApp" style="font-size:18px">💬</a>
+          <a href="https://facebook.com" target="_blank" class="footer-social-btn" title="Facebook" style="font-size:18px">👥</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Agency</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="about.html#team">Our Team</a></li>
+          <li><a href="about.html#projects">Portfolio</a></li>
+          <li><a href="blog.html">Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">E-Commerce Dev</a></li>
+          <li><a href="#services">Portfolio Sites</a></li>
+          <li><a href="#services">Landing Pages</a></li>
+          <li><a href="#services">Website Redesign</a></li>
+          <li><a href="#services">Courses</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="mailto:kongobonface@gmail.com">📧 Email Us</a></li>
+          <li><a href="https://wa.me/254111760757" target="_blank">💬 WhatsApp</a></li>
+          <li><a href="tel:+254111760757">📞 Call Us</a></li>
+          <li><a href="#hire">📋 Hire Us</a></li>
+          <li><a href="admin.html" style="color:var(--text-dim);font-size:12px">🔐 Admin</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Casual Code Studios. All rights reserved. Built with ❤️ in Nyeri, Kenya.</span>
+      <span style="display:flex;gap:4px;align-items:center">
+        Made with <span style="color:var(--red)">HTML</span> · <span style="color:var(--red)">CSS</span> · <span style="color:var(--red)">JS</span>
+      </span>
+    </div>
+  </footer>
+
+  <!-- ===== LOGIN / REGISTER MODAL ===== -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="login-gate">
+      <div class="login-gate-icon">🔐</div>
+      <h3>Join Casual Code Studios</h3>
+      <p>Sign in or create an account to access exclusive articles, tutorials, and community resources.</p>
+      <div class="login-gate-tabs">
+        <button class="login-tab active" data-tab="tab-login">Sign In</button>
+        <button class="login-tab" data-tab="tab-register">Register</button>
+        <button class="login-tab" data-tab="tab-vip">VIP Code</button>
+      </div>
+      <!-- Login -->
+      <div class="tab-content active" id="tab-login">
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" class="form-input" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="form-input" placeholder="Min. 6 characters" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Sign In</button>
+        </form>
+      </div>
+      <!-- Register -->
+      <div class="tab-content" id="tab-register">
+        <form id="registerForm">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" class="form-input" placeholder="John Kamau" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" class="form-input" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="form-input" placeholder="Min. 6 characters" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Create Account 🎉</button>
+        </form>
+      </div>
+      <!-- VIP Code -->
+      <div class="tab-content" id="tab-vip">
+        <div class="vip-code-section">
+          <p>Enter your one-time VIP access code to unlock premium membership.</p>
+          <form id="vipCodeForm">
+            <div class="form-group">
+              <label>VIP Code</label>
+              <input type="text" name="vipCode" class="form-input" placeholder="e.g. VIP2026" required style="text-transform:uppercase;letter-spacing:2px">
+            </div>
+            <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:center">⭐ Activate VIP</button>
+          </form>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    </div>
+  </div>
+
+  <!-- ===== HIRE MODAL ===== -->
+  <div class="modal-overlay" id="hireModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('hireModal')">✕</button>
+      <h3>Start Your Project 🚀</h3>
+      <p>Quick inquiry form — we'll follow up within 24 hours.</p>
+      <form id="hireForm">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" name="name" class="form-input" placeholder="John Kamau" required>
+        </div>
+        <div class="form-group">
+          <label>Email / WhatsApp</label>
+          <input type="text" name="contact" class="form-input" placeholder="email or +254..." required>
+        </div>
+        <div class="form-group">
+          <label>What do you need?</label>
+          <select name="service" class="form-input">
+            <option>E-Commerce Website</option>
+            <option>Portfolio Website</option>
+            <option>Landing Page</option>
+            <option>Website Redesign</option>
+            <option>HTML/CSS Course</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Brief Description</label>
+          <textarea name="brief" class="form-input" placeholder="What are you building?" style="min-height:80px"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Enquiry →</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== ARTICLE MODAL ===== -->
+  <div class="modal-overlay" id="articleModal">
+    <div class="article-modal">
+      <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
+      <div id="articleModalContent"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

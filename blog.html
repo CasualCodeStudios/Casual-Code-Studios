@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Casual Code Studios Blog — Web dev stories, design showcases, and the latest from our studio.">
+  <title>Blog & Showcase | Casual Code Studios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+<div class="cursor"></div>
+<div class="cursor-ring"></div>
+<div class="noise-overlay"></div>
+
+<!-- HEADER -->
+<nav class="nav" id="mainNav">
+  <a href="index.html" class="nav-logo">Casual <span>_Code_</span> Studios</a>
+  <ul class="nav-links">
+    <li><a href="about.html">About</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="theme-toggle" title="Toggle theme">☀️</button>
+    <div id="authBtnWrap" class="auth-btn-wrap show-if-logged-out">
+      <button class="btn-login" onclick="openAuthModal('login')">Login</button>
+      <button class="btn-hire" onclick="openAuthModal('signup')">Sign Up</button>
+    </div>
+    <div id="userBtnWrap" class="user-btn-wrap hidden show-if-logged-in" style="display:none">
+      <span class="user-greet" id="userGreet">Hey, <strong><span class="user-display-name"></span></strong></span>
+      <button class="btn-vip-dash show-if-vip" style="display:none" onclick="openVipDashboard()">⭐ VIP Dashboard</button>
+      <button class="btn-logout logout-btn">Logout</button>
+    </div>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-drawer">
+  <a href="index.html">Home</a>
+  <a href="about.html">About & Work</a>
+  <a href="blog.html">Blog</a>
+  <a href="index.html#services">Services</a>
+  <a href="index.html#pricing">Pricing</a>
+  <a href="index.html#hire">Hire Us</a>
+</div>
+
+
+<!-- ===== BLOG HERO ===== -->
+<section class="blog-hero section">
+  <div class="bh-bg-word">BLOG</div>
+  <div class="blog-hero-inner reveal-up">
+    <span class="section-tag">Fresh from the Studio</span>
+    <h1>The <em>CCS</em> Blog</h1>
+    <p>Web dev stories, design showcases, before-and-after transformations, and the occasional hot take from our team. Log in to read full articles — free for members!</p>
+    <div class="blog-hero-cta">
+      <button class="btn-primary" onclick="openAuthModal('signup')">Join Free →</button>
+      <button class="btn-ghost" onclick="openAuthModal('login')">Already a member</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORIES ===== -->
+<div class="blog-categories reveal-up">
+  <button class="cat-btn active" data-cat="all">All Posts</button>
+  <button class="cat-btn" data-cat="tutorial">Tutorials</button>
+  <button class="cat-btn" data-cat="showcase">Showcases</button>
+  <button class="cat-btn" data-cat="news">Dev News</button>
+  <button class="cat-btn" data-cat="beforeafter">Before & After</button>
+</div>
+
+<!-- ===== BLOG POSTS GRID ===== -->
+<section class="blog-section section" id="blog-posts">
+  <div class="posts-grid" id="postsGrid">
+    <!-- Posts injected by app.js -->
+  </div>
+</section>
+
+<!-- ===== BEFORE & AFTER SHOWCASE ===== -->
+<section class="ba-section section" id="showcase">
+  <div class="section-header reveal-up">
+    <span class="section-tag">The Glow-Up Files</span>
+    <h2>Before &amp; <em>After</em></h2>
+    <p class="section-sub">The transformations that make us proud. Swipe to compare.</p>
+  </div>
+
+  <div class="ba-grid">
+    <div class="ba-card reveal-card" data-delay="0">
+      <div class="ba-inner">
+        <div class="ba-before">
+          <span class="ba-label">BEFORE</span>
+          <div class="ba-placeholder before-ph">
+            <span>😬 Plain HTML</span>
+            <p>No styling, no layout, just raw text and broken images</p>
+          </div>
+        </div>
+        <div class="ba-divider">→</div>
+        <div class="ba-after">
+          <span class="ba-label after-lbl">AFTER</span>
+          <div class="ba-placeholder after-ph">
+            <span>🔥 Modern Design</span>
+            <p>Responsive, animated, conversion-optimized</p>
+          </div>
+        </div>
+      </div>
+      <h4>SunRise Valley Farms — Full Redesign</h4>
+      <p>From a static placeholder page to a full-featured farm e-commerce site with animations, product gallery, and mobile optimization.</p>
+    </div>
+
+    <div class="ba-card reveal-card" data-delay="150">
+      <div class="ba-inner">
+        <div class="ba-before">
+          <span class="ba-label">BEFORE</span>
+          <div class="ba-placeholder before-ph">
+            <span>😴 Basic Template</span>
+            <p>Generic bootstrap template, no personality, zero brand identity</p>
+          </div>
+        </div>
+        <div class="ba-divider">→</div>
+        <div class="ba-after">
+          <span class="ba-label after-lbl">AFTER</span>
+          <div class="ba-placeholder after-ph">
+            <span>✨ Boutique Luxury</span>
+            <p>Elegant, brand-matched, smooth UX with fashion-forward aesthetic</p>
+          </div>
+        </div>
+      </div>
+      <h4>Bemilwis Boutique — Brand Identity Build</h4>
+      <p>Transformed a cookie-cutter template into a boutique experience that actually feels like fashion.</p>
+    </div>
+
+    <div class="ba-card reveal-card" data-delay="300">
+      <div class="ba-inner">
+        <div class="ba-before">
+          <span class="ba-label">BEFORE</span>
+          <div class="ba-placeholder before-ph">
+            <span>🐢 Old Portfolio</span>
+            <p>Outdated portfolio with no animations and poor mobile experience</p>
+          </div>
+        </div>
+        <div class="ba-divider">→</div>
+        <div class="ba-after">
+          <span class="ba-label after-lbl">AFTER</span>
+          <div class="ba-placeholder after-ph">
+            <span>🚀 Pro Physio Site</span>
+            <p>GSAP animations, booking modal, testimonials, sleek dark theme</p>
+          </div>
+        </div>
+      </div>
+      <h4>PhysioCare Portfolio — Complete Overhaul</h4>
+      <p>Built a healthcare professional's portfolio from the ground up with animations and booking system that converted clients from day one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NEWSLETTER ===== -->
+<section class="newsletter-section section reveal-up">
+  <div class="nl-inner">
+    <div class="nl-text">
+      <h2>Don't miss a <em>post</em></h2>
+      <p>Get web dev tips, design inspiration, and project showcases straight to your inbox.</p>
+    </div>
+    <div class="nl-form">
+      <input type="email" placeholder="your@email.com" id="blogNlEmail">
+      <button onclick="subscribeNewsletter()">Subscribe →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">Casual <span>_Code_</span> Studios</div>
+      <p>A frontend web development agency from Nyeri, Kenya. We build websites that look incredible and work flawlessly.</p>
+      <div class="footer-socials">
+        <a href="https://github.com" target="_blank" class="footer-social-btn" title="GitHub">🐙</a>
+        <a href="https://linkedin.com" target="_blank" class="footer-social-btn" title="LinkedIn">💼</a>
+        <a href="https://instagram.com" target="_blank" class="footer-social-btn" title="Instagram">📸</a>
+        <a href="https://youtube.com" target="_blank" class="footer-social-btn" title="YouTube">▶️</a>
+        <a href="https://wa.me/254111760757" target="_blank" class="footer-social-btn" title="WhatsApp">💬</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Agency</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="blog.html">Blog</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="index.html#services">E-Commerce Dev</a></li>
+        <li><a href="index.html#services">Portfolio Sites</a></li>
+        <li><a href="index.html#services">Landing Pages</a></li>
+        <li><a href="index.html#services">Courses</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <ul>
+        <li><a href="mailto:kongobonface@gmail.com">📧 Email Us</a></li>
+        <li><a href="https://wa.me/254111760757" target="_blank">💬 WhatsApp</a></li>
+        <li><a href="tel:+254111760757">📞 Call Us</a></li>
+        <li><a href="index.html#hire">📋 Hire Us</a></li>
+        <li><a href="admin.html" style="color:var(--text-dim);font-size:12px">🔐 Admin</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Casual Code Studios. All rights reserved. Built with ❤️ in Nyeri, Kenya.</span>
+    <span>HTML · CSS · JavaScript</span>
+  </div>
+</footer>
+
+<!-- ===== AUTH MODAL ===== -->
+<div class="modal-overlay" id="loginModal" onclick="handleAuthOverlay(event)">
+  <div class="modal-panel auth-panel" id="authPanel">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    
+    <!-- Login Tab -->
+    <div id="loginTab">
+      <h2>Welcome <em>Back</em></h2>
+      <p>Login to read full articles and access member content.</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+      <div class="modal-form">
+        <div class="form-group"><input type="email" id="l-email" placeholder=" " required><label for="l-email">Email</label></div>
+        <div class="form-group"><input type="password" id="l-pass" placeholder=" " required><label for="l-pass">Password</label></div>
+        <button class="btn-primary full-btn" onclick="loginUser()">Login →</button>
+        <p class="auth-or">— or —</p>
+        <div class="form-group"><input type="text" id="l-vip" placeholder=" "><label for="l-vip">VIP Code (optional)</label></div>
+        <button class="btn-ghost full-btn" onclick="loginVip()">Enter as VIP →</button>
+      </div>
+    </div>
+
+    <!-- Signup Tab -->
+    <div id="signupTab" class="hidden">
+      <h2>Join <em>CCS</em></h2>
+      <p>Create a free account to access all blog content.</p>
+      <div class="auth-tabs">
+        <button class="auth-tab" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab active" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+      <div class="modal-form">
+        <div class="form-group"><input type="text" id="s-name" placeholder=" " required><label for="s-name">Full Name</label></div>
+        <div class="form-group"><input type="email" id="s-email" placeholder=" " required><label for="s-email">Email</label></div>
+        <div class="form-group"><input type="password" id="s-pass" placeholder=" " required><label for="s-pass">Password</label></div>
+        <button class="btn-primary full-btn" onclick="signupUser()">Create Account →</button>
+        <p style="text-align:center;font-size:0.8rem;color:var(--text-muted);margin-top:10px">By signing up, you agree to receive awesome web dev content 🤙</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLE LOCK MODAL -->
+<div class="modal-overlay" id="lockModal" onclick="handleLockOverlay(event)">
+  <div class="modal-panel lock-panel" id="lockPanel">
+    <button class="modal-close" onclick="closeLockModal()">✕</button>
+    <div class="lock-icon">🔒</div>
+    <h2>Members <em>Only</em></h2>
+    <p>This article is exclusive to CCS members. Join for free to read the full piece — no credit card needed.</p>
+    <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="closeLockModal(); openAuthModal('signup');">Join Free →</button>
+      <button class="btn-ghost" onclick="closeLockModal(); openAuthModal('login');">Already a member</button>
+    </div>
+  </div>
+</div>
+<!-- ===== VIP DASHBOARD ===== -->
+<div class="vip-dashboard-overlay" id="vipDashboard">
+  <header class="vip-dash-header">
+    <div class="vip-dash-logo">Casual <span>_Code_</span> Studios</div>
+    <div class="vip-dash-actions">
+      <span class="vip-badge-label">⭐ VIP Member</span>
+      <button class="theme-toggle" title="Toggle theme"><span class="theme-icon">🌙</span></button>
+      <button class="btn-ghost" style="padding:8px 16px;font-size:12px;font-family:var(--font-mono)" onclick="closeVipDashboard()">← Back to Blog</button>
+    </div>
+  </header>
+  <div class="vip-dash-body">
+    <aside class="vip-sidebar">
+      <button class="vip-nav-btn active" onclick="showVipPanel('overview')">📊 Overview</button>
+      <button class="vip-nav-btn" onclick="showVipPanel('content')">📖 VIP Content</button>
+      <button class="vip-nav-btn" onclick="showVipPanel('profile')">👤 My Profile</button>
+    </aside>
+    <main class="vip-main">
+      <!-- Overview Panel -->
+      <div class="vip-panel active" id="vip-panel-overview">
+        <div class="vip-section-title">Welcome back, <em id="vipUserName">Member</em> ⭐</div>
+        <div class="vip-stats-row">
+          <div class="vip-stat-card"><span class="vip-stat-icon">📖</span><div><span class="vip-stat-num" id="vipPostCount">6</span><span class="vip-stat-lbl">Articles Unlocked</span></div></div>
+          <div class="vip-stat-card"><span class="vip-stat-icon">⭐</span><div><span class="vip-stat-num">VIP</span><span class="vip-stat-lbl">Access Level</span></div></div>
+          <div class="vip-stat-card"><span class="vip-stat-icon">🔓</span><div><span class="vip-stat-num">All</span><span class="vip-stat-lbl">Content Access</span></div></div>
+        </div>
+        <div class="vip-section-title" style="margin-top:16px">Latest <em>VIP Content</em></div>
+        <div class="vip-content-grid" id="vipOverviewPosts"></div>
+      </div>
+      <!-- Content Panel -->
+      <div class="vip-panel" id="vip-panel-content">
+        <div class="vip-section-title">All <em>VIP Articles</em></div>
+        <div class="vip-content-grid" id="vipAllPosts"></div>
+      </div>
+      <!-- Profile Panel -->
+      <div class="vip-panel" id="vip-panel-profile">
+        <div class="vip-section-title">My <em>Profile</em></div>
+        <div class="vip-profile-card">
+          <div class="vip-avatar-wrap">
+            <div class="vip-avatar" id="vipAvatarCircle" onclick="document.getElementById('vipAvatarInput').click()">
+              <span id="vipAvatarInitial">👤</span>
+              <img id="vipAvatarImg" src="" alt="" style="display:none">
+              <div class="vip-avatar-change">📷</div>
+            </div>
+            <input type="file" id="vipAvatarInput" accept="image/*" style="display:none" onchange="handleVipAvatar(event)">
+            <div class="vip-avatar-info">
+              <h3 id="vipProfileName">VIP Member</h3>
+              <p>⭐ VIP Member · <span id="vipProfileEmail"></span></p>
+            </div>
+          </div>
+          <div class="vip-form-grid">
+            <div class="form-group">
+              <label>Display Name</label>
+              <input type="text" class="form-input" id="vip-pf-name" placeholder="Your name">
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-input" id="vip-pf-email" placeholder="email@example.com">
+            </div>
+            <div class="form-group full">
+              <label>Location</label>
+              <input type="text" class="form-input" id="vip-pf-location" placeholder="e.g. Nairobi, Kenya">
+            </div>
+            <div class="form-group full">
+              <label>Bio</label>
+              <textarea class="form-input" id="vip-pf-bio" rows="3" placeholder="Tell us about yourself..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label>Website / Portfolio</label>
+              <input type="url" class="form-input" id="vip-pf-website" placeholder="https://yoursite.com">
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="saveVipProfile()">Save Profile →</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+</body>
+</html>
