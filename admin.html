@@ -3,297 +3,549 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard | Casual Code Studios</title>
+  <title>Coming Soon — Casual Code Studios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-<script>
-  (function() {
-    const t = localStorage.getItem('ccs-theme') || 'dark';
-    if (t === 'light') document.documentElement.classList.add('light');
-    else document.body && document.body.classList.remove('light-mode');
-  })();
-</script>
-  <script src="app.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:       #e63946;
+      --red-dark:  #9b1c2a;
+      --red-glow:  rgba(230, 57, 70, 0.35);
+      --red-soft:  rgba(230, 57, 70, 0.10);
+      --bg:        #080a0d;
+      --bg-2:      #0e1117;
+      --bg-card:   #111520;
+      --border:    rgba(255,255,255,0.07);
+      --border-red:rgba(230, 57, 70, 0.3);
+      --text:      #f0ede6;
+      --muted:     #8a8d9a;
+      --dim:       #3a3d4a;
+      --mono:      'JetBrains Mono', monospace;
+      --display:   'Roboto', sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      overflow: hidden;
+    }
+
+    /* ── CANVAS BACKGROUND ── */
+    canvas#particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    /* ── GRID LINES ── */
+    .grid {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+    }
+
+    /* ── RED GLOW BLOB ── */
+    .blob {
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(230,57,70,0.18) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      animation: pulse-blob 6s ease-in-out infinite;
+    }
+    @keyframes pulse-blob {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+      50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    }
+
+    /* ── SCAN LINE ── */
+    .scanline {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ── MAIN WRAPPER ── */
+    .stage {
+      position: relative;
+      z-index: 10;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      gap: 0;
+    }
+
+    /* ── TOP TAG ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid var(--border-red);
+      border-radius: 50px;
+      background: var(--red-soft);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fade-up 0.6s 0.2s ease forwards;
+    }
+    .tag-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: blink-dot 1.4s ease-in-out infinite;
+    }
+    @keyframes blink-dot {
+      0%,100% { opacity: 1; } 50% { opacity: 0.2; }
+    }
+
+    /* ── LOGO ── */
+    .logo {
+      font-family: var(--display);
+      font-size: clamp(13px, 2vw, 16px);
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fade-up 0.6s 0.35s ease forwards;
+    }
+    .logo span { color: var(--red); }
+
+    /* ── HEADLINE ── */
+    .headline {
+      font-family: var(--display);
+      font-size: clamp(52px, 10vw, 120px);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -4px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fade-up 0.7s 0.5s ease forwards;
+    }
+    .headline .line1 { display: block; color: var(--text); }
+    .headline .line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--red) 0%, #ff8fa3 50%, var(--red) 100%);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-slide 3s linear infinite, fade-up 0.7s 0.5s ease forwards;
+    }
+    @keyframes gradient-slide {
+      0% { background-position: 0% } 100% { background-position: 200%; }
+    }
+
+    /* ── SUBLINE ── */
+    .subline {
+      font-size: clamp(12px, 1.5vw, 14px);
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fade-up 0.6s 0.65s ease forwards;
+    }
+
+    /* ── COUNTDOWN ── */
+    .countdown {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 60px;
+      opacity: 0;
+      animation: fade-up 0.7s 0.8s ease forwards;
+    }
+    .count-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .count-card {
+      position: relative;
+      width: clamp(72px, 14vw, 110px);
+      height: clamp(80px, 15vw, 120px);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .count-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(230,57,70,0.08), transparent);
+    }
+    .count-card::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 1px;
+      background: var(--border);
+    }
+    .count-num {
+      font-family: var(--display);
+      font-size: clamp(36px, 8vw, 64px);
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -2px;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.2s ease;
+    }
+    .count-num.flip {
+      animation: flip-num 0.35s ease;
+    }
+    @keyframes flip-num {
+      0%   { transform: translateY(0) scaleY(1); opacity: 1; }
+      50%  { transform: translateY(-12px) scaleY(0.6); opacity: 0; }
+      51%  { transform: translateY(12px) scaleY(0.6); opacity: 0; }
+      100% { transform: translateY(0) scaleY(1); opacity: 1; }
+    }
+    .count-label {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    /* Red accent on days */
+    .count-block:first-child .count-card {
+      border-color: var(--border-red);
+      box-shadow: 0 0 30px rgba(230,57,70,0.15);
+    }
+    .count-block:first-child .count-num { color: var(--red); }
+
+    /* Separator colon */
+    .colon {
+      font-family: var(--display);
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 900;
+      color: var(--dim);
+      margin-top: clamp(20px, 4vw, 36px);
+      animation: blink-colon 1s step-end infinite;
+      user-select: none;
+    }
+    @keyframes blink-colon {
+      0%,100% { opacity: 1; } 50% { opacity: 0.1; }
+    }
+
+    /* ── NOTIFY ROW ── */
+    .notify {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      overflow: hidden;
+      background: var(--bg-2);
+      opacity: 0;
+      animation: fade-up 0.6s 1s ease forwards;
+    }
+    .notify input {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 14px 22px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      width: clamp(200px, 30vw, 300px);
+    }
+    .notify input::placeholder { color: var(--dim); }
+    .notify button {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.3s;
+      white-space: nowrap;
+    }
+    .notify button:hover { background: var(--red-dark); }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      z-index: 20;
+      opacity: 0;
+      animation: fade-up 0.6s 1.2s ease forwards;
+    }
+    .bottom-nav a {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .bottom-nav a:hover { color: var(--red); }
+    .bottom-nav span { color: var(--dim); font-size: 10px; }
+
+    /* ── CORNER DECO ── */
+    .corner {
+      position: fixed;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--dim);
+      font-family: var(--mono);
+    }
+    .corner-tl { top: 28px; left: 32px; }
+    .corner-tr { top: 28px; right: 32px; text-align: right; }
+    .corner-bl { bottom: 28px; left: 32px; }
+    .corner-br { bottom: 28px; right: 32px; text-align: right; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .headline { letter-spacing: -2px; }
+      .corner-tl, .corner-tr, .corner-bl, .corner-br { display: none; }
+      .countdown { gap: 4px; }
+      .colon { margin-top: clamp(16px, 4vw, 28px); }
+    }
+  </style>
 </head>
 <body>
+  <!-- Custom Cursor -->
+  <div class="cursor"></div>
+  <div class="cursor-ring"><div id="clock"></div></div>
 
-<div class="noise-overlay"></div>
-
-<!-- ADMIN LOGIN SCREEN -->
-<div class="admin-login-screen" id="adminLoginScreen">
-  <div class="admin-login-card">
-    <div class="admin-login-logo"><span class="logo-bracket">{</span>CCS<span class="logo-bracket">}</span></div>
-    <h2>Admin <em>Access</em></h2>
-    <p>Restricted area. Authorized personnel only.</p>
-    <div class="modal-form" style="margin-top:24px;">
-      <div class="form-group">
-        <input type="email" id="adm-email" placeholder=" ">
-        <label for="adm-email">Admin Email</label>
-      </div>
-      <div class="form-group">
-        <input type="password" id="adm-pass" placeholder=" ">
-        <label for="adm-pass">Admin Password</label>
-      </div>
-      <p id="adm-error" class="adm-error hidden">❌ Invalid credentials</p>
-      <button class="btn-primary full-btn" onclick="adminLogin()">Enter Dashboard →</button>
+  <!-- ===== NAV ===== -->
+  <nav class="nav" id="mainNav">
+    <a href="index.html" class="nav-logo">Casual <span>_Code_</span> Studios</a>
+    <ul class="nav-links">
+      <li><a href="index.html"><img src="home.png" alt=""></a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="theme-toggle" title="Toggle theme"><img class="theme-icon" src="happy-sun.png" alt="happy sun icon"></button>
+      <a href="blog.html" class="btn-nav show-if-logged-out">Join Community</a>
+      <span class="show-if-logged-in" style="display:none">
+        <button class="btn-nav logout-btn" style="background:transparent;color:var(--red);border-color:var(--red)">
+          Hi, <span class="user-display-name"></span> · Logout
+        </button>
+      </span>
+      <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-    <a href="index.html" style="display:block;text-align:center;margin-top:20px;color:var(--text-muted);font-size:0.85rem;">← Back to Site</a>
-    <p style="text-align:center;margin-top:10px;font-size:0.75rem;color:var(--text-muted)">Default: admin@ccs.com / ccs-admin-2026</p>
+  </nav>
+  <canvas id="particles"></canvas>
+  <div class="grid"></div>
+  <div class="blob"></div>
+  <div class="scanline"></div>
+
+  <!-- Corner decorations -->
+  <div class="corner corner-tl">CCS_v2.0<br>INITIALIZING</div>
+  <div class="corner corner-tr">STATUS: BUILDING<br>EST. 2024 · NYERI, KE</div>
+  <div class="corner corner-bl">HTML · CSS · JS</div>
+  <div class="corner corner-br">CASUAL_CODE_STUDIOS<br>© 2026</div>
+
+  <div class="stage">
+
+    <div class="tag">
+      <span class="tag-dot"></span>
+      Something big is loading
+    </div>
+
+    <div class="logo">Casual <span>_Code_</span> Studios</div>
+
+    <h1 class="headline">
+      <span class="line1">Coming</span>
+      <span class="line2">Soon</span>
+    </h1>
+
+    <p class="subline">// We're shipping something worth the wait</p>
+
+    <!-- Countdown -->
+    <div class="countdown">
+      <div class="count-block">
+        <div class="count-card"><span class="count-num" id="cd-days">02</span></div>
+        <div class="count-label">Days</div>
+      </div>
+      <div class="colon">:</div>
+      <div class="count-block">
+        <div class="count-card"><span class="count-num" id="cd-hours">00</span></div>
+        <div class="count-label">Hours</div>
+      </div>
+      <div class="colon">:</div>
+      <div class="count-block">
+        <div class="count-card"><span class="count-num" id="cd-mins">00</span></div>
+        <div class="count-label">Mins</div>
+      </div>
+      <div class="colon">:</div>
+      <div class="count-block">
+        <div class="count-card"><span class="count-num" id="cd-secs">00</span></div>
+        <div class="count-label">Secs</div>
+      </div>
+    </div>
+
+    <!-- Notify -->
+    <div class="notify">
+      <input type="email" placeholder="drop your email, get notified →" id="notifyEmail">
+      <button onclick="handleNotify()">Notify Me</button>
+    </div>
+
   </div>
-</div>
 
-<!-- ADMIN DASHBOARD -->
-<div class="admin-dashboard hidden" id="adminDashboard">
+  <!-- Bottom nav back to home -->
+  <nav class="bottom-nav">
+    <a href="index.html">← Home</a>
+    <span>/</span>
+    <a href="mailto:kongobonface@gmail.com">Contact</a>
+    <span>/</span>
+    <a href="https://wa.me/254111760757" target="_blank">WhatsApp</a>
+  </nav>
 
-  <!-- SIDEBAR -->
-  <aside class="adm-sidebar">
-    <div class="adm-logo"><span class="logo-bracket">{</span>CCS<span class="logo-bracket">}</span><span class="adm-badge">ADMIN</span></div>
-    <nav class="adm-nav">
-      <button class="adm-nav-btn active" onclick="showPanel('overview')">📊 Overview</button>
-      <button class="adm-nav-btn" onclick="showPanel('posts')">📝 Blog Posts</button>
-      <button class="adm-nav-btn" onclick="showPanel('members')">👥 Members</button>
-      <button class="adm-nav-btn" onclick="showPanel('vip')">⭐ VIP Members</button>
-      <button class="adm-nav-btn" onclick="showPanel('inquiries')">📩 Inquiries</button>
-      <button class="adm-nav-btn" onclick="showPanel('settings')">⚙️ Settings</button>
-    </nav>
-    <button class="adm-logout" onclick="adminLogout()">← Logout</button>
-  </aside>
+  <script>
+    /* ── COUNTDOWN ── */
+    const TARGET = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 days from now
 
-  <!-- MAIN CONTENT -->
-  <main class="adm-main">
-    <!-- Header -->
-    <div class="adm-topbar">
-      <div>
-        <h1 id="panelTitle">Overview</h1>
-        <span id="panelSub">Welcome back, Admin 🎯</span>
-      </div>
-      <div class="adm-topbar-actions">
-        <button class="theme-toggle" id="themeToggle" title="Toggle theme"><span class="theme-icon">🌙</span></button>
-        <span class="adm-time" id="admTime"></span>
-        <div class="admin-avatar-circle" id="adminTopbarAvatar" onclick="showPanel('settings')" title="Edit Profile" style="width:40px;height:40px;font-size:16px;cursor:pointer;margin-left:8px">
-          <span id="adminTopbarInitial">KB</span>
-          <img id="adminTopbarImg" src="" alt="" style="display:none">
-        </div>
-      </div>
-    </div>
+    function pad(n) { return String(n).padStart(2, '0'); }
 
-    <!-- ===== OVERVIEW PANEL ===== -->
-    <div class="adm-panel active" id="panel-overview">
-      <div class="adm-stats-row">
-        <div class="adm-stat-card">
-          <span class="adm-stat-icon">👥</span>
-          <div><span class="adm-stat-num" id="totalMembers">0</span><span class="adm-stat-lbl">Total Members</span></div>
-        </div>
-        <div class="adm-stat-card">
-          <span class="adm-stat-icon">⭐</span>
-          <div><span class="adm-stat-num" id="totalVip">0</span><span class="adm-stat-lbl">VIP Members</span></div>
-        </div>
-        <div class="adm-stat-card">
-          <span class="adm-stat-icon">📝</span>
-          <div><span class="adm-stat-num" id="totalPosts">0</span><span class="adm-stat-lbl">Blog Posts</span></div>
-        </div>
-        <div class="adm-stat-card">
-          <span class="adm-stat-icon">📩</span>
-          <div><span class="adm-stat-num" id="totalInquiries">0</span><span class="adm-stat-lbl">Inquiries</span></div>
-        </div>
-      </div>
+    function flipUpdate(el, val) {
+      const padded = pad(val);
+      if (el.textContent !== padded) {
+        el.classList.remove('flip');
+        void el.offsetWidth; // reflow
+        el.classList.add('flip');
+        el.textContent = padded;
+      }
+    }
 
-      <div class="adm-grid-2">
-        <div class="adm-card">
-          <h3>Recent Members</h3>
-          <div id="recentMembers" class="adm-list"></div>
-        </div>
-        <div class="adm-card">
-          <h3>Recent Inquiries</h3>
-          <div id="recentInquiries" class="adm-list"></div>
-        </div>
-      </div>
+    function tick() {
+      const now  = Date.now();
+      const diff = Math.max(0, TARGET - now);
 
-      <div class="adm-card">
-        <h3>Quick Actions</h3>
-        <div class="quick-actions">
-          <button class="qa-btn" onclick="showPanel('posts'); document.getElementById('newPostBtn').click()">✍️ New Post</button>
-          <button class="qa-btn" onclick="showPanel('vip')">⭐ Manage VIP</button>
-          <button class="qa-btn" onclick="showPanel('members')">👥 View Members</button>
-          <a href="index.html" class="qa-btn" target="_blank">🌐 View Site</a>
-        </div>
-      </div>
-    </div>
+      const days  = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins  = Math.floor((diff % 3600000)  / 60000);
+      const secs  = Math.floor((diff % 60000)    / 1000);
 
-    <!-- ===== POSTS PANEL ===== -->
-    <div class="adm-panel hidden" id="panel-posts">
-      <div class="adm-panel-actions">
-        <button class="btn-primary" id="newPostBtn" onclick="openNewPostForm()">+ New Post</button>
-      </div>
+      flipUpdate(document.getElementById('cd-days'),  days);
+      flipUpdate(document.getElementById('cd-hours'), hours);
+      flipUpdate(document.getElementById('cd-mins'),  mins);
+      flipUpdate(document.getElementById('cd-secs'),  secs);
+    }
 
-      <!-- New/Edit Post Form -->
-      <div class="adm-card new-post-form hidden" id="newPostForm">
-        <h3 id="postFormTitle">Create New Post</h3>
-        <div class="post-form-grid">
-          <div class="form-group"><input type="text" id="pf-title" placeholder=" "><label for="pf-title">Post Title</label></div>
-          <div class="form-group">
-            <select id="pf-cat">
-              <option value="" disabled selected></option>
-              <option value="tutorial">Tutorial</option>
-              <option value="showcase">Showcase</option>
-              <option value="news">Dev News</option>
-              <option value="beforeafter">Before & After</option>
-            </select>
-            <label for="pf-cat" class="select-label">Category</label>
-          </div>
-          <div class="form-group"><input type="text" id="pf-tags" placeholder=" "><label for="pf-tags">Tags (comma-separated)</label></div>
-          <div class="form-group">
-            <select id="pf-access">
-              <option value="public">Public (Preview)</option>
-              <option value="members">Members Only</option>
-            </select>
-            <label for="pf-access" class="select-label">Access Level</label>
-          </div>
-          <div class="form-group full">
-            <textarea id="pf-excerpt" rows="2" placeholder=" "></textarea>
-            <label for="pf-excerpt">Excerpt (shown in preview)</label>
-          </div>
-          <div class="form-group full">
-            <textarea id="pf-content" rows="8" placeholder=" "></textarea>
-            <label for="pf-content">Full Content (members only)</label>
-          </div>
-          <div class="form-group">
-            <input type="text" id="pf-author" placeholder=" " value="Kongo Bonface">
-            <label for="pf-author">Author</label>
-          </div>
-          <div class="form-group">
-            <input type="text" id="pf-readtime" placeholder=" " value="5 min read">
-            <label for="pf-readtime">Read Time</label>
-          </div>
-        </div>
-        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
-          <button class="btn-primary" onclick="savePost()">Save Post →</button>
-          <button class="btn-ghost" onclick="cancelPostForm()">Cancel</button>
-        </div>
-      </div>
+    tick();
+    setInterval(tick, 1000);
 
-      <!-- Posts List -->
-      <div class="adm-card">
-        <h3>All Posts (<span id="postCount">0</span>)</h3>
-        <div id="postsList" class="adm-table-wrap"></div>
-      </div>
-    </div>
+    /* ── NOTIFY ── */
+    function handleNotify() {
+      const email = document.getElementById('notifyEmail').value.trim();
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      alert(`Got it! We'll notify ${email} when we launch. 🚀`);
+      document.getElementById('notifyEmail').value = '';
+    }
 
-    <!-- ===== MEMBERS PANEL ===== -->
-    <div class="adm-panel hidden" id="panel-members">
-      <div class="adm-card">
-        <div class="adm-panel-header">
-          <h3>All Members (<span id="memberCount">0</span>)</h3>
-          <button class="btn-primary" onclick="openAddMemberForm()">+ Add Member</button>
-        </div>
+    /* ── PARTICLE CANVAS ── */
+    const canvas = document.getElementById('particles');
+    const ctx    = canvas.getContext('2d');
+    let W, H, dots = [];
 
-        <!-- Add Member Form -->
-        <div class="add-member-form hidden" id="addMemberForm">
-          <div class="post-form-grid">
-            <div class="form-group"><input type="text" id="am-name" placeholder=" "><label for="am-name">Full Name</label></div>
-            <div class="form-group"><input type="email" id="am-email" placeholder=" "><label for="am-email">Email</label></div>
-            <div class="form-group">
-              <select id="am-role">
-                <option value="member">Regular Member</option>
-                <option value="vip">VIP Member</option>
-              </select>
-              <label for="am-role" class="select-label">Role</label>
-            </div>
-            <div class="form-group"><input type="text" id="am-note" placeholder=" "><label for="am-note">Notes (optional)</label></div>
-          </div>
-          <div style="display:flex;gap:12px;margin-top:12px;">
-            <button class="btn-primary" onclick="addMember()">Add Member →</button>
-            <button class="btn-ghost" onclick="cancelAddMember()">Cancel</button>
-          </div>
-        </div>
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
 
-        <div id="membersList" class="adm-table-wrap" style="margin-top:16px;"></div>
-      </div>
-    </div>
+    function initDots() {
+      dots = Array.from({ length: 60 }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.3,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3,
+        a: Math.random()
+      }));
+    }
 
-    <!-- ===== VIP PANEL ===== -->
-    <div class="adm-panel hidden" id="panel-vip">
-      <div class="adm-card">
-        <div class="adm-panel-header">
-          <h3>VIP Members & Codes</h3>
-          <button class="btn-primary" onclick="generateVipCode()">Generate VIP Code</button>
-        </div>
-        <p style="color:var(--text-muted);margin-bottom:16px;">VIP members get access to exclusive content and a personalized dashboard. Assign one-time codes for new VIPs.</p>
-        <div id="vipCodesList" class="adm-table-wrap"></div>
-      </div>
-      <div class="adm-card" style="margin-top:20px;">
-        <h3>VIP Members (<span id="vipCount">0</span>)</h3>
-        <div id="vipMembersList" class="adm-table-wrap"></div>
-      </div>
-    </div>
+    function drawDots() {
+      ctx.clearRect(0, 0, W, H);
+      dots.forEach(d => {
+        d.x += d.dx; d.y += d.dy;
+        if (d.x < 0) d.x = W; if (d.x > W) d.x = 0;
+        if (d.y < 0) d.y = H; if (d.y > H) d.y = 0;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(230,57,70,${d.a * 0.6})`;
+        ctx.fill();
+      });
 
-    <!-- ===== INQUIRIES PANEL ===== -->
-    <div class="adm-panel hidden" id="panel-inquiries">
-      <div class="adm-card">
-        <h3>Client Inquiries (<span id="inquiryCount">0</span>)</h3>
-        <div id="inquiriesList" class="adm-table-wrap"></div>
-      </div>
-    </div>
+      // draw connecting lines
+      for (let i = 0; i < dots.length; i++) {
+        for (let j = i + 1; j < dots.length; j++) {
+          const dist = Math.hypot(dots[i].x - dots[j].x, dots[i].y - dots[j].y);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(dots[j].x, dots[j].y);
+            ctx.strokeStyle = `rgba(230,57,70,${(1 - dist / 120) * 0.12})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(drawDots);
+    }
 
-    <!-- ===== SETTINGS PANEL ===== -->
-    <div class="adm-panel hidden" id="panel-settings">
-      <div class="adm-card">
-        <h3>Admin Profile</h3>
-        <!-- Profile Picture -->
-        <div class="admin-profile-wrap">
-          <div class="admin-avatar-circle" id="adminAvatarCircle" onclick="document.getElementById('adminAvatarInput').click()" title="Click to change photo">
-            <span id="adminAvatarInitial">KB</span>
-            <img id="adminAvatarImg" src="" alt="" style="display:none">
-          </div>
-          <input type="file" id="adminAvatarInput" accept="image/*" style="display:none" onchange="handleAdminAvatar(event)">
-          <div>
-            <h4 style="font-family:var(--font-display);font-size:18px;font-weight:700">Kongo Bonface</h4>
-            <p style="color:var(--text-muted);font-size:13px;margin-top:4px;font-family:var(--font-mono)">Administrator · Casual Code Studios</p>
-            <button class="btn-ghost" style="margin-top:8px;padding:6px 14px;font-size:12px" onclick="document.getElementById('adminAvatarInput').click()">📷 Change Photo</button>
-          </div>
-        </div>
-        <div class="post-form-grid">
-          <div class="form-group"><input type="text" id="set-agency" placeholder=" " value="Casual Code Studios"><label for="set-agency">Agency Name</label></div>
-          <div class="form-group"><input type="email" id="set-email" placeholder=" " value="kongobonface@gmail.com"><label for="set-email">Contact Email</label></div>
-          <div class="form-group"><input type="tel" id="set-phone" placeholder=" " value="+254 111 760 757"><label for="set-phone">Phone</label></div>
-          <div class="form-group"><input type="text" id="set-location" placeholder=" " value="Nyeri, Kenya"><label for="set-location">Location</label></div>
-          <div class="form-group"><input type="text" id="set-displayname" placeholder=" " value="Kongo Bonface"><label for="set-displayname">Display Name</label></div>
-          <div class="form-group"><input type="text" id="set-title" placeholder=" " value="Lead Developer"><label for="set-title">Job Title</label></div>
-        </div>
-
-        <div style="margin-top:24px;">
-          <h4 style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:12px">Dashboard Theme</h4>
-          <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;font-family:var(--font-mono)">Pick an accent color for the admin panel</p>
-          <div class="admin-theme-select" id="adminThemeSelect">
-            <button class="admin-theme-btn active" data-color="#e63946" style="background:#e63946" title="Red (Default)" onclick="setAdminTheme('#e63946', this)"></button>
-            <button class="admin-theme-btn" data-color="#3b82f6" style="background:#3b82f6" title="Blue" onclick="setAdminTheme('#3b82f6', this)"></button>
-            <button class="admin-theme-btn" data-color="#10b981" style="background:#10b981" title="Emerald" onclick="setAdminTheme('#10b981', this)"></button>
-            <button class="admin-theme-btn" data-color="#8b5cf6" style="background:#8b5cf6" title="Purple" onclick="setAdminTheme('#8b5cf6', this)"></button>
-            <button class="admin-theme-btn" data-color="#f59e0b" style="background:#f59e0b" title="Amber" onclick="setAdminTheme('#f59e0b', this)"></button>
-            <button class="admin-theme-btn" data-color="#ec4899" style="background:#ec4899" title="Pink" onclick="setAdminTheme('#ec4899', this)"></button>
-            <button class="admin-theme-btn" data-color="#06b6d4" style="background:#06b6d4" title="Cyan" onclick="setAdminTheme('#06b6d4', this)"></button>
-            <button class="admin-theme-btn" data-color="#f97316" style="background:#f97316" title="Orange" onclick="setAdminTheme('#f97316', this)"></button>
-          </div>
-        </div>
-
-        <div style="margin-top:28px;">
-          <h4 style="font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:12px">Change Admin Password</h4>
-          <div class="post-form-grid" style="margin-top:12px;">
-            <div class="form-group"><input type="password" id="set-oldpass" placeholder=" "><label for="set-oldpass">Current Password</label></div>
-            <div class="form-group"><input type="password" id="set-newpass" placeholder=" "><label for="set-newpass">New Password</label></div>
-          </div>
-        </div>
-        <button class="btn-primary" style="margin-top:16px;" onclick="saveSettings()">Save All Changes →</button>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<!-- TOAST -->
-<div class="toast hidden" id="toast"></div>
-
+    resize();
+    initDots();
+    drawDots();
+    window.addEventListener('resize', () => { resize(); initDots(); });
+  </script>
 </body>
 </html>

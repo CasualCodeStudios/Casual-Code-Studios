@@ -1,3 +1,148 @@
+
+
+index.html
+html
+
+
+style.css
+css
+
+In the hero section i need a div wrapper for an image on the bottom right of the code page, but it should overlap it to be on the top like the "custom builds" button. also make the "we are" to be smaller than "Casual Code Studios"
+
+1:26 AM
+
+Viewed 5 files
+Viewed 5 files
+Now I have a full picture of the structure. I'll make two changes:
+
+Add an image wrapper div positioned at the bottom-right of the code window, overlapping it (like card-1 and card-2 do — using position: absolute)
+Make "We are," smaller than the brand name lines in the hero-h1
+
+Edited 2 files, ran a command
+Edited 2 files, ran a command
+Now add the CSS for both changes:
+
+
+Edited a file, ran a command, read a file
+Edited a file, ran a command, read a file
+Here's what was changed:
+
+1. Image wrapper div (hero-img-overlay) — Added just after card-2 inside .hero-visual. It's absolutely positioned at bottom: -24px; right: -24px so it sits at the bottom-right of the code window and overlaps it upward, the same way the float cards do. It has a subtle red border glow, rounded corners, and a floating animation. Just drop your image filename into the src="" attribute of the <img> inside it.
+
+2. "We are," is now smaller — Wrapped in a .hero-we-are span with font-size: clamp(20px, 2.5vw, 34px) and a muted color, so it reads as a subtle subtitle above the larger, gradient-styled "Casual .code. Studios" brand name.
+
+
+Index
+Code · HTML 
+
+Style
+Code · CSS 
+for the form about starting a project at the end of the index.html page, i need it to use formspree and here is the link for the action attribute "https://formspree.io/f/mykldwoj"
+
+1:50 AM
+
+Viewed 2 files, edited a file, read a file
+Viewed 2 files, edited a file, read a file
+Done! The hire form now has action="https://formspree.io/f/mykldwoj" and method="POST" set. When someone submits it, Formspree will receive the fields — name, contact, service, and brief — and forward them to your linked email. No other changes were needed since the inputs already had name attributes.
+
+
+Index
+Code · HTML 
+Hello Claude, I happen to have my specialty in html, css and javascript so I hope this makes me a rather fine front end developer, right? So can you help me write an intro for my linked in account and since you have gone hrough my portfolio, I think you know my skills better and including your help on the way here I think with your help thus we can get something fine, right???
+
+2:12 AM
+That's a great foundation — HTML, CSS, and JavaScript are the core of the web, and from what I've seen in your Casual Code Studios project, you're clearly putting them to real use. Clean structure, custom animations, modal systems, Formspree integration, dark/light theming — that's not beginner work.
+
+That said, before I write the intro I want to make sure it hits the right note for you:
+
+Take your time with those — once I know the direction, I'll craft something that actually sounds like you and not a generic AI-written bio.
+
+Q: What tone do you want for the intro?
+A: Creative & personality-driven
+
+Q: What's your main goal with LinkedIn right now?
+A: I need to network with other developers and if possible land some freelance clients
+
+Q: Should I mention Casual Code Studios by name?
+A: Yes, feature it prominently
+
+2:14 AM
+Love it. Here's your LinkedIn intro:
+
+I build the web from scratch — and I enjoy every line of it.
+
+Frontend Developer based in Nyeri, Kenya. HTML, CSS & JavaScript are my tools of choice, and I've been putting them to work building Casual Code Studios — a web agency crafting e-commerce stores, portfolios, landing pages, and digital experiences that actually convert.
+
+At Casual Code Studios, I handle everything from pixel-perfect UI to smooth animations, dark/light theming, modal systems, and AI-assisted builds. Every project ships clean, fast, and intentional.
+
+I'm here to connect with fellow developers, share what I'm learning, and work with clients who want a website that does more than just exist online.
+
+If you need a frontend developer who's hands-on, detail-obsessed, and building something real from Nyeri — let's talk.
+
+🔗 Casual Code Studios | HTML · CSS · JavaScript · AI-assisted development
+
+A few things I did intentionally here — "Nyeri, Kenya" is kept in because it's part of your identity and makes you memorable rather than just another dev. The Casual Code Studios mention is front and center as your proof of work, not just a name drop. And the closing line is a soft but direct invite for both networking and freelance without sounding desperate.
+
+Feel free to tell me if you want it shorter, punchier, or to lean harder into either the freelance or networking angle.
+
+thanks so much Claude
+
+2:16 AM
+You're welcome! Best of luck with the LinkedIn profile and Casual Code Studios — you're building something real out of Nyeri and that's genuinely something to be proud of. 🚀
+
+Go get those clients! 💪
+
+and for the profile headline
+
+2:22 AM
+For a headline that's punchy and searchable, here are a few options depending on what feels most like you:
+
+Option 1 — Brand-forward: Frontend Developer · Founder of Casual Code Studios · Building the Web from Nyeri, Kenya
+
+Option 2 — Client-focused: Frontend Developer | HTML · CSS · JS | I build websites that convert — Casual Code Studios
+
+Option 3 — Personality-driven: I write code, build brands & craft digital experiences · Casual Code Studios · Nyeri, Kenya
+
+Option 4 — Short & bold: Frontend Developer · Casual Code Studios Founder · Web that works.
+
+My pick for you would be Option 1 — it's clear, has your brand name, your skills are implied, and "Nyeri, Kenya" makes you stand out and memorable in a global feed.
+
+But if you want to tweak any of them or mix elements from a few, just say the word!
+
+I need a page that is fancy with a countdown of 2 days , saying coming soon. I need to use it in place for my about page and blog
+
+2:53 AM
+
+Check the frontend design skill
+Check the frontend design skill
+Now I have a clear picture of the existing brand — dark/red theme, JetBrains Mono, code aesthetic. I'll build a page that matches Casual Code Studios perfectly.
+
+
+Created a file, read a file
+Created a file, read a file
+Here's your coming-soon.html — fully self-contained, no dependencies on your CSS file. Here's what's packed in:
+
+Live countdown — starts from exactly 2 days the moment the page loads, ticks every second with a smooth flip animation
+Particle network — subtle red floating dots with connecting lines in the background, matching your brand
+Grid lines + glow blob — same aesthetic as your hero section
+Scanline overlay — gives it that premium CRT/terminal feel
+Corner decorations — little code-style labels in each corner
+Email notify input — collects emails with a basic validation alert (you can hook it to Formspree later if you want)
+Bottom nav — links back to Home, your email, and WhatsApp
+To use it, just point your about.html and blog.html links to coming-soon.html in your nav — or rename it directly to those filenames. The countdown resets each time the page loads fresh, so if you want it to count to a fixed date, just tell me and I'll update it to a specific deadline.
+
+
+Coming soon
+Code · HTML 
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Coming soon · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +151,6 @@
   <title>Coming Soon — Casual Code Studios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -25,9 +169,9 @@
       --mono:      'JetBrains Mono', monospace;
       --display:   'Roboto', sans-serif;
     }
-
+ 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
+ 
     html, body {
       height: 100%;
       background: var(--bg);
@@ -35,7 +179,7 @@
       font-family: var(--mono);
       overflow: hidden;
     }
-
+ 
     /* ── CANVAS BACKGROUND ── */
     canvas#particles {
       position: fixed;
@@ -43,7 +187,7 @@
       z-index: 0;
       opacity: 0.5;
     }
-
+ 
     /* ── GRID LINES ── */
     .grid {
       position: fixed;
@@ -55,7 +199,7 @@
       background-size: 60px 60px;
       mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
     }
-
+ 
     /* ── RED GLOW BLOB ── */
     .blob {
       position: fixed;
@@ -71,7 +215,7 @@
       0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
       50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
     }
-
+ 
     /* ── SCAN LINE ── */
     .scanline {
       position: fixed;
@@ -86,7 +230,7 @@
       );
       pointer-events: none;
     }
-
+ 
     /* ── MAIN WRAPPER ── */
     .stage {
       position: relative;
@@ -99,7 +243,7 @@
       padding: 40px 24px;
       gap: 0;
     }
-
+ 
     /* ── TOP TAG ── */
     .tag {
       display: inline-flex;
@@ -126,7 +270,7 @@
     @keyframes blink-dot {
       0%,100% { opacity: 1; } 50% { opacity: 0.2; }
     }
-
+ 
     /* ── LOGO ── */
     .logo {
       font-family: var(--display);
@@ -140,7 +284,7 @@
       animation: fade-up 0.6s 0.35s ease forwards;
     }
     .logo span { color: var(--red); }
-
+ 
     /* ── HEADLINE ── */
     .headline {
       font-family: var(--display);
@@ -167,7 +311,7 @@
     @keyframes gradient-slide {
       0% { background-position: 0% } 100% { background-position: 200%; }
     }
-
+ 
     /* ── SUBLINE ── */
     .subline {
       font-size: clamp(12px, 1.5vw, 14px);
@@ -177,7 +321,7 @@
       opacity: 0;
       animation: fade-up 0.6s 0.65s ease forwards;
     }
-
+ 
     /* ── COUNTDOWN ── */
     .countdown {
       display: flex;
@@ -249,7 +393,7 @@
       box-shadow: 0 0 30px rgba(230,57,70,0.15);
     }
     .count-block:first-child .count-num { color: var(--red); }
-
+ 
     /* Separator colon */
     .colon {
       font-family: var(--display);
@@ -263,7 +407,7 @@
     @keyframes blink-colon {
       0%,100% { opacity: 1; } 50% { opacity: 0.1; }
     }
-
+ 
     /* ── NOTIFY ROW ── */
     .notify {
       display: flex;
@@ -301,7 +445,7 @@
       white-space: nowrap;
     }
     .notify button:hover { background: var(--red-dark); }
-
+ 
     /* ── BOTTOM NAV ── */
     .bottom-nav {
       position: fixed;
@@ -325,7 +469,7 @@
     }
     .bottom-nav a:hover { color: var(--red); }
     .bottom-nav span { color: var(--dim); font-size: 10px; }
-
+ 
     /* ── CORNER DECO ── */
     .corner {
       position: fixed;
@@ -338,13 +482,13 @@
     .corner-tr { top: 28px; right: 32px; text-align: right; }
     .corner-bl { bottom: 28px; left: 32px; }
     .corner-br { bottom: 28px; right: 32px; text-align: right; }
-
+ 
     /* ── ANIMATIONS ── */
     @keyframes fade-up {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
+ 
     /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .headline { letter-spacing: -2px; }
@@ -355,58 +499,34 @@
   </style>
 </head>
 <body>
-  <!-- Custom Cursor -->
-  <div class="cursor"></div>
-  <div class="cursor-ring"><div id="clock"></div></div>
-
-  <!-- ===== NAV ===== -->
-  <nav class="nav" id="mainNav">
-    <a href="index.html" class="nav-logo">Casual <span>_Code_</span> Studios</a>
-    <ul class="nav-links">
-      <li><a href="index.html"><img src="home.png" alt=""></a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="blog.html">Blog</a></li>
-    </ul>
-    <div class="nav-actions">
-      <button class="theme-toggle" title="Toggle theme"><img class="theme-icon" src="happy-sun.png" alt="happy sun icon"></button>
-      <a href="blog.html" class="btn-nav show-if-logged-out">Join Community</a>
-      <span class="show-if-logged-in" style="display:none">
-        <button class="btn-nav logout-btn" style="background:transparent;color:var(--red);border-color:var(--red)">
-          Hi, <span class="user-display-name"></span> · Logout
-        </button>
-      </span>
-      <button class="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
+ 
   <canvas id="particles"></canvas>
   <div class="grid"></div>
   <div class="blob"></div>
   <div class="scanline"></div>
-
+ 
   <!-- Corner decorations -->
   <div class="corner corner-tl">CCS_v2.0<br>INITIALIZING</div>
   <div class="corner corner-tr">STATUS: BUILDING<br>EST. 2024 · NYERI, KE</div>
   <div class="corner corner-bl">HTML · CSS · JS</div>
   <div class="corner corner-br">CASUAL_CODE_STUDIOS<br>© 2026</div>
-
+ 
   <div class="stage">
-
+ 
     <div class="tag">
       <span class="tag-dot"></span>
       Something big is loading
     </div>
-
+ 
     <div class="logo">Casual <span>_Code_</span> Studios</div>
-
+ 
     <h1 class="headline">
       <span class="line1">Coming</span>
       <span class="line2">Soon</span>
     </h1>
-
+ 
     <p class="subline">// We're shipping something worth the wait</p>
-
+ 
     <!-- Countdown -->
     <div class="countdown">
       <div class="count-block">
@@ -429,15 +549,15 @@
         <div class="count-label">Secs</div>
       </div>
     </div>
-
+ 
     <!-- Notify -->
     <div class="notify">
       <input type="email" placeholder="drop your email, get notified →" id="notifyEmail">
       <button onclick="handleNotify()">Notify Me</button>
     </div>
-
+ 
   </div>
-
+ 
   <!-- Bottom nav back to home -->
   <nav class="bottom-nav">
     <a href="index.html">← Home</a>
@@ -446,13 +566,13 @@
     <span>/</span>
     <a href="https://wa.me/254111760757" target="_blank">WhatsApp</a>
   </nav>
-
+ 
   <script>
     /* ── COUNTDOWN ── */
     const TARGET = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 days from now
-
+ 
     function pad(n) { return String(n).padStart(2, '0'); }
-
+ 
     function flipUpdate(el, val) {
       const padded = pad(val);
       if (el.textContent !== padded) {
@@ -462,25 +582,25 @@
         el.textContent = padded;
       }
     }
-
+ 
     function tick() {
       const now  = Date.now();
       const diff = Math.max(0, TARGET - now);
-
+ 
       const days  = Math.floor(diff / 86400000);
       const hours = Math.floor((diff % 86400000) / 3600000);
       const mins  = Math.floor((diff % 3600000)  / 60000);
       const secs  = Math.floor((diff % 60000)    / 1000);
-
+ 
       flipUpdate(document.getElementById('cd-days'),  days);
       flipUpdate(document.getElementById('cd-hours'), hours);
       flipUpdate(document.getElementById('cd-mins'),  mins);
       flipUpdate(document.getElementById('cd-secs'),  secs);
     }
-
+ 
     tick();
     setInterval(tick, 1000);
-
+ 
     /* ── NOTIFY ── */
     function handleNotify() {
       const email = document.getElementById('notifyEmail').value.trim();
@@ -491,17 +611,17 @@
       alert(`Got it! We'll notify ${email} when we launch. 🚀`);
       document.getElementById('notifyEmail').value = '';
     }
-
+ 
     /* ── PARTICLE CANVAS ── */
     const canvas = document.getElementById('particles');
     const ctx    = canvas.getContext('2d');
     let W, H, dots = [];
-
+ 
     function resize() {
       W = canvas.width  = window.innerWidth;
       H = canvas.height = window.innerHeight;
     }
-
+ 
     function initDots() {
       dots = Array.from({ length: 60 }, () => ({
         x: Math.random() * W,
@@ -512,7 +632,7 @@
         a: Math.random()
       }));
     }
-
+ 
     function drawDots() {
       ctx.clearRect(0, 0, W, H);
       dots.forEach(d => {
@@ -524,7 +644,7 @@
         ctx.fillStyle = `rgba(230,57,70,${d.a * 0.6})`;
         ctx.fill();
       });
-
+ 
       // draw connecting lines
       for (let i = 0; i < dots.length; i++) {
         for (let j = i + 1; j < dots.length; j++) {
@@ -541,7 +661,7 @@
       }
       requestAnimationFrame(drawDots);
     }
-
+ 
     resize();
     initDots();
     drawDots();
@@ -549,3 +669,4 @@
   </script>
 </body>
 </html>
+ 

@@ -6,7 +6,6 @@
   <title>Coming Soon — Casual Code Studios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -355,31 +354,7 @@
   </style>
 </head>
 <body>
-  <!-- Custom Cursor -->
-  <div class="cursor"></div>
-  <div class="cursor-ring"><div id="clock"></div></div>
 
-  <!-- ===== NAV ===== -->
-  <nav class="nav" id="mainNav">
-    <a href="index.html" class="nav-logo">Casual <span>_Code_</span> Studios</a>
-    <ul class="nav-links">
-      <li><a href="index.html"><img src="home.png" alt=""></a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="blog.html">Blog</a></li>
-    </ul>
-    <div class="nav-actions">
-      <button class="theme-toggle" title="Toggle theme"><img class="theme-icon" src="happy-sun.png" alt="happy sun icon"></button>
-      <a href="blog.html" class="btn-nav show-if-logged-out">Join Community</a>
-      <span class="show-if-logged-in" style="display:none">
-        <button class="btn-nav logout-btn" style="background:transparent;color:var(--red);border-color:var(--red)">
-          Hi, <span class="user-display-name"></span> · Logout
-        </button>
-      </span>
-      <button class="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
   <canvas id="particles"></canvas>
   <div class="grid"></div>
   <div class="blob"></div>
