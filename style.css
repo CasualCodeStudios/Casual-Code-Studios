@@ -67,7 +67,7 @@ html {
   scroll-behavior: smooth; 
 }
 body {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9),transparent,rgba(0, 0, 0, 0.9)),url("BACKGROUND-GLOW.jpg"),url("ccs-logo.png");
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9),transparent,rgba(0, 0, 0, 0.9)),url("BACKGROUND-GLOW.jpg");
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
@@ -1141,7 +1141,10 @@ select.form-input { cursor: pointer; }
 /* ===== PRICING SECTION ===== */
 .pricing-section {
   padding: 120px 40px;
-  background: var(--bg-2);
+  background: url("ccs-logo.png") no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
   position: relative;
 }
 .pricing-grid {
