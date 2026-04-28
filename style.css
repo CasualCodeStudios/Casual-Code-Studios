@@ -1902,7 +1902,7 @@ select.form-input { cursor: pointer; }
 
 /* ===== SKILLS SECTION ===== */
 .skills-section {
-  background: linear-gradient(to bottom, transparent, #000, transparent) ,url("https://i.pinimg.com/1200x/be/a1/04/bea10483733fc66297b9986927dad702.jpg") no-repeat;
+  background: linear-gradient(to bottom, transparent, #000000a9, transparent) ,url("https://i.pinimg.com/1200x/be/a1/04/bea10483733fc66297b9986927dad702.jpg") no-repeat;
   background-attachment: fixed;
   background-position: center;
   background-size: cover;
