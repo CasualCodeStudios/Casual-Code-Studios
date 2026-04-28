@@ -1902,6 +1902,10 @@ select.form-input { cursor: pointer; }
 
 /* ===== SKILLS SECTION ===== */
 .skills-section {
+  background: url("https://i.pinimg.com/736x/aa/f3/0d/aaf30d5685b74740072813c85710658b.jpg") no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
   padding: 100px 40px;
 }
 .skills-content {
