@@ -1731,7 +1731,7 @@ select.form-input { cursor: pointer; }
   width: 150px;
   background: var(--red);
   border-radius: var(--radius-sm);
-  padding: 20px;
+  padding: 10px;
   text-align: center;
 }
 .story-mini-num {
