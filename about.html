@@ -3,549 +3,577 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coming Soon — Casual Code Studios</title>
+  <meta name="description" content="About Casual Code Studios — Our story, team, skills, and the projects we've built.">
+  <title>About & Work — Casual Code Studios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --red:       #e63946;
-      --red-dark:  #9b1c2a;
-      --red-glow:  rgba(230, 57, 70, 0.35);
-      --red-soft:  rgba(230, 57, 70, 0.10);
-      --bg:        #080a0d;
-      --bg-2:      #0e1117;
-      --bg-card:   #111520;
-      --border:    rgba(255,255,255,0.07);
-      --border-red:rgba(230, 57, 70, 0.3);
-      --text:      #f0ede6;
-      --muted:     #8a8d9a;
-      --dim:       #3a3d4a;
-      --mono:      'JetBrains Mono', monospace;
-      --display:   'Roboto', sans-serif;
-    }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--mono);
-      overflow: hidden;
-    }
-
-    /* ── CANVAS BACKGROUND ── */
-    canvas#particles {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      opacity: 0.5;
-    }
-
-    /* ── GRID LINES ── */
-    .grid {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
-    }
-
-    /* ── RED GLOW BLOB ── */
-    .blob {
-      position: fixed;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(230,57,70,0.18) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 1;
-      animation: pulse-blob 6s ease-in-out infinite;
-    }
-    @keyframes pulse-blob {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-      50%       { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
-    }
-
-    /* ── SCAN LINE ── */
-    .scanline {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(0,0,0,0.08) 3px,
-        rgba(0,0,0,0.08) 4px
-      );
-      pointer-events: none;
-    }
-
-    /* ── MAIN WRAPPER ── */
-    .stage {
-      position: relative;
-      z-index: 10;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 24px;
-      gap: 0;
-    }
-
-    /* ── TOP TAG ── */
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      border: 1px solid var(--border-red);
-      border-radius: 50px;
-      background: var(--red-soft);
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--red);
-      margin-bottom: 32px;
-      opacity: 0;
-      animation: fade-up 0.6s 0.2s ease forwards;
-    }
-    .tag-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--red);
-      animation: blink-dot 1.4s ease-in-out infinite;
-    }
-    @keyframes blink-dot {
-      0%,100% { opacity: 1; } 50% { opacity: 0.2; }
-    }
-
-    /* ── LOGO ── */
-    .logo {
-      font-family: var(--display);
-      font-size: clamp(13px, 2vw, 16px);
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 20px;
-      opacity: 0;
-      animation: fade-up 0.6s 0.35s ease forwards;
-    }
-    .logo span { color: var(--red); }
-
-    /* ── HEADLINE ── */
-    .headline {
-      font-family: var(--display);
-      font-size: clamp(52px, 10vw, 120px);
-      font-weight: 900;
-      line-height: 0.9;
-      letter-spacing: -4px;
-      text-transform: uppercase;
-      text-align: center;
-      margin-bottom: 16px;
-      opacity: 0;
-      animation: fade-up 0.7s 0.5s ease forwards;
-    }
-    .headline .line1 { display: block; color: var(--text); }
-    .headline .line2 {
-      display: block;
-      background: linear-gradient(90deg, var(--red) 0%, #ff8fa3 50%, var(--red) 100%);
-      background-size: 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: gradient-slide 3s linear infinite, fade-up 0.7s 0.5s ease forwards;
-    }
-    @keyframes gradient-slide {
-      0% { background-position: 0% } 100% { background-position: 200%; }
-    }
-
-    /* ── SUBLINE ── */
-    .subline {
-      font-size: clamp(12px, 1.5vw, 14px);
-      color: var(--muted);
-      letter-spacing: 1px;
-      margin-bottom: 56px;
-      opacity: 0;
-      animation: fade-up 0.6s 0.65s ease forwards;
-    }
-
-    /* ── COUNTDOWN ── */
-    .countdown {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 60px;
-      opacity: 0;
-      animation: fade-up 0.7s 0.8s ease forwards;
-    }
-    .count-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-    .count-card {
-      position: relative;
-      width: clamp(72px, 14vw, 110px);
-      height: clamp(80px, 15vw, 120px);
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .count-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(230,57,70,0.08), transparent);
-    }
-    .count-card::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 0; right: 0;
-      height: 1px;
-      background: var(--border);
-    }
-    .count-num {
-      font-family: var(--display);
-      font-size: clamp(36px, 8vw, 64px);
-      font-weight: 900;
-      color: var(--text);
-      letter-spacing: -2px;
-      position: relative;
-      z-index: 2;
-      transition: transform 0.2s ease;
-    }
-    .count-num.flip {
-      animation: flip-num 0.35s ease;
-    }
-    @keyframes flip-num {
-      0%   { transform: translateY(0) scaleY(1); opacity: 1; }
-      50%  { transform: translateY(-12px) scaleY(0.6); opacity: 0; }
-      51%  { transform: translateY(12px) scaleY(0.6); opacity: 0; }
-      100% { transform: translateY(0) scaleY(1); opacity: 1; }
-    }
-    .count-label {
-      font-size: 10px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--dim);
-    }
-    /* Red accent on days */
-    .count-block:first-child .count-card {
-      border-color: var(--border-red);
-      box-shadow: 0 0 30px rgba(230,57,70,0.15);
-    }
-    .count-block:first-child .count-num { color: var(--red); }
-
-    /* Separator colon */
-    .colon {
-      font-family: var(--display);
-      font-size: clamp(28px, 6vw, 48px);
-      font-weight: 900;
-      color: var(--dim);
-      margin-top: clamp(20px, 4vw, 36px);
-      animation: blink-colon 1s step-end infinite;
-      user-select: none;
-    }
-    @keyframes blink-colon {
-      0%,100% { opacity: 1; } 50% { opacity: 0.1; }
-    }
-
-    /* ── NOTIFY ROW ── */
-    .notify {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      border: 1px solid var(--border);
-      border-radius: 50px;
-      overflow: hidden;
-      background: var(--bg-2);
-      opacity: 0;
-      animation: fade-up 0.6s 1s ease forwards;
-    }
-    .notify input {
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 14px 22px;
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--text);
-      width: clamp(200px, 30vw, 300px);
-    }
-    .notify input::placeholder { color: var(--dim); }
-    .notify button {
-      background: var(--red);
-      color: #fff;
-      border: none;
-      padding: 14px 24px;
-      font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.3s;
-      white-space: nowrap;
-    }
-    .notify button:hover { background: var(--red-dark); }
-
-    /* ── BOTTOM NAV ── */
-    .bottom-nav {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      z-index: 20;
-      opacity: 0;
-      animation: fade-up 0.6s 1.2s ease forwards;
-    }
-    .bottom-nav a {
-      font-size: 12px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--dim);
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    .bottom-nav a:hover { color: var(--red); }
-    .bottom-nav span { color: var(--dim); font-size: 10px; }
-
-    /* ── CORNER DECO ── */
-    .corner {
-      position: fixed;
-      font-size: 10px;
-      letter-spacing: 1px;
-      color: var(--dim);
-      font-family: var(--mono);
-    }
-    .corner-tl { top: 28px; left: 32px; }
-    .corner-tr { top: 28px; right: 32px; text-align: right; }
-    .corner-bl { bottom: 28px; left: 32px; }
-    .corner-br { bottom: 28px; right: 32px; text-align: right; }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fade-up {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 600px) {
-      .headline { letter-spacing: -2px; }
-      .corner-tl, .corner-tr, .corner-bl, .corner-br { display: none; }
-      .countdown { gap: 4px; }
-      .colon { margin-top: clamp(16px, 4vw, 28px); }
-    }
-  </style>
 </head>
 <body>
-  <!-- Custom Cursor -->
   <div class="cursor"></div>
-  <div class="cursor-ring"><div id="clock"></div></div>
+  <div class="cursor-ring"></div>
 
-  <!-- ===== NAV ===== -->
-  <nav class="nav" id="mainNav">
-    <a href="index.html" class="nav-logo">Casual <span>_Code_</span> Studios</a>
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-logo"><img src="official-logo.png" alt="logo"></a>
     <ul class="nav-links">
       <li><a href="index.html"><img src="home.png" alt=""></a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="blog.html">Blog</a></li>
     </ul>
     <div class="nav-actions">
-      <button class="theme-toggle" title="Toggle theme"><img class="theme-icon" src="happy-sun.png" alt="happy sun icon"></button>
-      <a href="blog.html" class="btn-nav show-if-logged-out">Join Community</a>
-      <span class="show-if-logged-in" style="display:none">
-        <button class="btn-nav logout-btn" style="background:transparent;color:var(--red);border-color:var(--red)">
-          Hi, <span class="user-display-name"></span> · Logout
-        </button>
-      </span>
+      <button class="theme-toggle" title="Toggle theme"><img class="theme-icon" src="happy-sun.png" alt="sun icon" style="width:22px;height:22px"></button>
+      <a href="index.html#hire" class="btn-nav">Start Project</a>
       <button class="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
-  <canvas id="particles"></canvas>
-  <div class="grid"></div>
-  <div class="blob"></div>
-  <div class="scanline"></div>
-
-  <!-- Corner decorations -->
-  <div class="corner corner-tl">CCS_v2.0<br>INITIALIZING</div>
-  <div class="corner corner-tr">STATUS: BUILDING<br>EST. 2024 · NYERI, KE</div>
-  <div class="corner corner-bl">HTML · CSS · JS</div>
-  <div class="corner corner-br">CASUAL_CODE_STUDIOS<br>© 2026</div>
-
-  <div class="stage">
-
-    <div class="tag">
-      <span class="tag-dot"></span>
-      Something big is loading
-    </div>
-
-    <div class="logo">Casual <span>_Code_</span> Studios</div>
-
-    <h1 class="headline">
-      <span class="line1">Coming</span>
-      <span class="line2">Soon</span>
-    </h1>
-
-    <p class="subline">// We're shipping something worth the wait</p>
-
-    <!-- Countdown -->
-    <div class="countdown">
-      <div class="count-block">
-        <div class="count-card"><span class="count-num" id="cd-days">02</span></div>
-        <div class="count-label">Days</div>
-      </div>
-      <div class="colon">:</div>
-      <div class="count-block">
-        <div class="count-card"><span class="count-num" id="cd-hours">00</span></div>
-        <div class="count-label">Hours</div>
-      </div>
-      <div class="colon">:</div>
-      <div class="count-block">
-        <div class="count-card"><span class="count-num" id="cd-mins">00</span></div>
-        <div class="count-label">Mins</div>
-      </div>
-      <div class="colon">:</div>
-      <div class="count-block">
-        <div class="count-card"><span class="count-num" id="cd-secs">00</span></div>
-        <div class="count-label">Secs</div>
-      </div>
-    </div>
-
-    <!-- Notify -->
-    <div class="notify">
-      <input type="email" placeholder="drop your email, get notified →" id="notifyEmail">
-      <button onclick="handleNotify()">Notify Me</button>
-    </div>
-
+  <div class="nav-drawer">
+    <a href="index.html">Home</a>
+    <a href="about.html">About & Work</a>
+    <a href="blog.html">Blog</a>
+    <a href="index.html#services">Services</a>
+    <a href="index.html#pricing">Pricing</a>
+    <a href="index.html#hire">Hire Us</a>
   </div>
 
-  <!-- Bottom nav back to home -->
-  <nav class="bottom-nav">
-    <a href="index.html">← Home</a>
-    <span>/</span>
-    <a href="mailto:kongobonface@gmail.com">Contact</a>
-    <span>/</span>
-    <a href="https://wa.me/254111760757" target="_blank">WhatsApp</a>
-  </nav>
+  <!-- HERO -->
+  <section class="about-hero">
+    <div class="about-hero-content">
+      <div class="about-hero-section-tag reveal">Our Story</div>
+      <h1 class="reveal"><em>Ain't</em> <span>Casual</span> About<br>Code, <em>Nor</em> <span>Quality</span></h1>
+      <p class="reveal d1">
+        Casual Code Studios is a Kenyan frontend web development agency that builds clean, modern, and powerful websites. We're serious about our craft — just not uptight about it.
+      </p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:24px" class="reveal d2">
+        <a href="index.html#hire" class="btn btn-primary"><img src="briefcase.png" alt="work icon"> Work With Us</a>
+        <a href="#projects" class="btn btn-outline">View Portfolio</a>
+      </div>
+    </div>
+  </section>
 
-  <script>
-    /* ── COUNTDOWN ── */
-    const TARGET = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 days from now
+  <!-- STORY / ABOUT -->
+  <section class="story-section" id="about">
+    <div class="story-grid">
+      <div class="story-visual reveal-left">
+        <div class="story-card-stack">
+          <div class="story-big-card" style="border: 3px solid red;">
+            <div class="story-big-card-content">
+              <h3>💡 How We Started</h3>
+              <p>Born out of late nights, keyboard clacks, and a burning curiosity about how websites actually work — Casual Code Studios started as one person's obsession with making things look great on screens.</p>
+            </div>
+          </div>
+          <div class="story-mini-card">
+            <div class="story-mini-num">2024</div>
+            <div class="story-mini-label">Nyeri</div>
+          </div>
+        </div>
+      </div>
+      <div class="story-text reveal-right">
+        <h2>Building the Web,<br><span>One Pixel at a Time</span></h2>
+        <p>
+          We started Casual Code Studios with one belief: great websites shouldn't be the exclusive domain of big-budget companies. Small businesses, artists, farmers, entrepreneurs — everyone deserves a web presence that looks like it cost millions.
+        </p>
+        <p>
+          Today, we're a small but mighty frontend agency that punches well above our weight class. We build e-commerce stores, landing pages, portfolios, and full business websites using HTML, CSS, JavaScript, and a healthy dose of AI-assisted development.
+        </p>
+        <p>
+          We also believe in giving back to the community — which is why we run beginner-friendly web development courses for anyone who wants to learn the craft.
+        </p>
+        <div class="story-values">
+          <div class="story-value">
+            <div class="story-value-icon"><img src="quality.png" alt="quality icon"></div>
+            <div class="story-value-text">
+              <h4>Quality Over Quantity</h4>
+              <p>We'd rather build 5 exceptional websites than 50 mediocre ones.</p>
+            </div>
+          </div>
+          <div class="story-value">
+            <div class="story-value-icon"><img src="partnership.png" alt="partnership icon"></div>
+            <div class="story-value-text">
+              <h4>Client Partnership</h4>
+              <p>We're not just vendors — we're invested in your success long after launch.</p>
+            </div>
+          </div>
+          <div class="story-value">
+            <div class="story-value-icon"><img src="increase.png" alt="increase graph"></div>
+            <div class="story-value-text">
+              <h4>Always Evolving</h4>
+              <p>We integrate AI, learn new tools, and stay ahead so your site stays modern.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    function pad(n) { return String(n).padStart(2, '0'); }
+  <div class="divider"></div>
 
-    function flipUpdate(el, val) {
-      const padded = pad(val);
-      if (el.textContent !== padded) {
-        el.classList.remove('flip');
-        void el.offsetWidth; // reflow
-        el.classList.add('flip');
-        el.textContent = padded;
-      }
-    }
+  <!-- SKILLS -->
+  <section class="skills-section" id="skills">
+    <div class="section-header reveal">
+      <div class="section-tag">Our Expertise</div>
+      <h2 class="section-title">What We're <span>Really Good At</span></h2>
+      <p class="section-sub">Five languages, dozens of tools, and one mission: to make your website exceptional.</p>
+    </div>
+    <div class="skills-content">
+      <div class="skills-left">
+        <h2>Core <span>Language</span><br>Proficiency</h2>
+        <p>We live and breathe frontend development. These are our primary tools of trade.</p>
+        <div class="skill-bars">
+          <!-- HTML 5 -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-header">
+              <span class="skill-bar-name"><img src="html-1.png" alt=""> HTML5</span>
+              <span class="skill-bar-pct">92%</span>
+            </div>
+            <div class="skill-bar-track">
+              <div class="skill-bar-fill" style="--w:92%"></div>
+            </div>
+          </div>
+          <!-- CSS / TAILWIND -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-header">
+              <span class="skill-bar-name"><img src="css.png" alt="css icon"> CSS3 / Tailwind</span>
+              <span class="skill-bar-pct">87%</span>
+            </div>
+            <div class="skill-bar-track">
+              <div class="skill-bar-fill" style="--w:87%"></div>
+            </div>
+          </div>
+          <!-- JAVASCRIPT -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-header">
+              <span class="skill-bar-name"><img src="java.png" alt="javascript icon"> JavaScript</span>
+              <span class="skill-bar-pct">55%</span>
+            </div>
+            <div class="skill-bar-track">
+              <div class="skill-bar-fill" style="--w:55%"></div>
+            </div>
+          </div>
+          <!-- FIGMA -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-header">
+              <span class="skill-bar-name"><img src="figma.png" alt="figma icon"> Figma / UI Design</span>
+              <span class="skill-bar-pct">70%</span>
+            </div>
+            <div class="skill-bar-track">
+              <div class="skill-bar-fill" style="--w:70%"></div>
+            </div>
+          </div>
+          <!-- PYTHON -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-header">
+              <span class="skill-bar-name"><img src="python.png" alt="python icon"> Python</span>
+              <span class="skill-bar-pct">33%</span>
+            </div>
+            <div class="skill-bar-track">
+              <div class="skill-bar-fill" style="--w:33%"></div>
+            </div>
+          </div>
+          <div class="skill-bar-item">
+            <div class="skill-bar-header">
+              <span class="skill-bar-name"><img src="cpu.png" alt="AI icon"> AI-Assisted Dev</span>
+              <span class="skill-bar-pct">60%</span>
+            </div>
+            <div class="skill-bar-track">
+              <div class="skill-bar-fill" style="--w:60%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="skills-right">
+        <!-- E-COMMERCE AND BUSINESS -->
+        <div class="skill-category-card reveal d1">
+          <div class="skill-cat-header">
+            <span class="skill-cat-icon"><img src="online-shopping.png" alt="cart"></span>
+            <h4>E-Commerce & Business</h4>
+          </div>
+          <div class="skill-tags">
+            <span class="skill-tag">Product Catalogs</span>
+            <span class="skill-tag">Cart Systems</span>
+            <span class="skill-tag">Checkout Flows</span>
+            <span class="skill-tag">Payment UX</span>
+            <span class="skill-tag">Admin Dashboards</span>
+          </div>
+        </div>
+        <!-- PORTFOLIOS -->
+        <div class="skill-category-card reveal d2">
+          <div class="skill-cat-header">
+            <span class="skill-cat-icon"><img src="user-file.png" alt="cart"></span>
+            <h4>Portfolios</h4>
+          </div>
+          <div class="skill-tags">
+            <span class="skill-tag">Personal Branding</span>
+            <span class="skill-tag">Project Showcases</span>
+            <span class="skill-tag">Case Studies</span>
+            <span class="skill-tag">Interactive galleries</span>
+            <span class="skill-tag">Resume Intergration</span>
+          </div>
+        </div>
+        <!-- DESIGN AND ANIMATION -->
+        <div class="skill-category-card reveal d3">
+          <div class="skill-cat-header">
+            <span class="skill-cat-icon"><img src="design-thinking.png" alt="design icon"></span>
+            <h4>Design & Animation</h4>
+          </div>
+          <div class="skill-tags">
+            <span class="skill-tag">Responsive Design</span>
+            <span class="skill-tag">CSS Animations</span>
+            <span class="skill-tag">GSAP</span>
+            <span class="skill-tag">Dark/Light Modes</span>
+            <span class="skill-tag">Canva</span>
+          </div>
+        </div>
+        <!-- AI INTERGRATION -->
+        <div class="skill-category-card reveal d4">
+          <div class="skill-cat-header">
+            <span class="skill-cat-icon"><img src="ai.png" alt="AI icon"></span>
+            <h4>AI Integration</h4>
+          </div>
+          <div class="skill-tags">
+            <span class="skill-tag">AI Research</span>
+            <span class="skill-tag">AI Code Review</span>
+            <span class="skill-tag">Design AI Tools</span>
+          </div>
+        </div>
+        <!-- TOOLS AND WORKFLOW ICON  -->
+        <div class="skill-category-card reveal d5">
+          <div class="skill-cat-header">
+            <span class="skill-cat-icon"><img src="settings.png" alt="tools icon"></span>
+            <h4>Tools & Workflow</h4>
+          </div>
+          <div class="skill-tags">
+            <span class="skill-tag">VS Code</span>
+            <span class="skill-tag">Git / GitHub</span>
+            <span class="skill-tag">Vercel / Netlify</span>
+            <span class="skill-tag">Figma</span>
+            <span class="skill-tag">MS Edge DevTools</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    function tick() {
-      const now  = Date.now();
-      const diff = Math.max(0, TARGET - now);
+  <!-- TEAM -->
+  <section class="team-section" id="team">
+    <div class="section-header reveal">
+      <div class="section-tag">The CCS Crew</div>
+      <h2 class="section-title">Small Team, <span>Big Energy</span></h2>
+      <p class="section-sub">We're a tight-knit group of creatives and coders who genuinely love what we do.</p>
+    </div>
+    <div class="team-grid">
+      <!-- Founder -->
+      <div class="team-card reveal d1">
+        <div class="team-card-top">
+          <span class="founder-crown"><img src="crown.png" alt="crown icon"></span>
+          <div class="team-avatar">
+            <img src="hero.jpg" alt="Admin profile pic">
+          </div>
+          <div class="team-name">Kongo Bonface</div>
+          <div class="team-role">Founder & Lead Dev</div>
+        </div>
+        <div class="team-card-body">
+          <p>The guy who started it all from a bedroom in a "blitz" universe. Frontend developer, UI designer, tennis player, and BMW fanatic. If it involves code, Kidd's on it.</p>
+          <div class="team-skills">
+            <span class="team-skill">HTML/CSS</span>
+            <span class="team-skill">JavaScript</span>
+            <span class="team-skill">Figma</span>
+            <span class="team-skill">Python</span>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+            <a href="https://github.com/CasualCodeStudios" target="_blank" class="footer-social-btn" style="width:32px;height:32px;font-size:14px"><img src="github.png" alt="github ic=on"></a>
+            <a href="https://www.linkedin.com/in/bonface-kongo-5b8248321" target="_blank" class="footer-social-btn" style="width:32px;height:32px;font-size:14px"><img src="linkedin.png" alt="linkedin icon"></a>
+          </div>
+        </div>
+      </div>
+      <!-- Team member 2 -->
+      <div class="team-card reveal d2">
+        <div class="team-card-top">
+          <div class="team-avatar">null</div>
+          <div class="team-name">APPLY - <em>contact-founder</em></div>
+          <div class="team-role">UI/UX Designer</div>
+        </div>
+        <div class="team-card-body">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Hic sunt corporis totam.</p>
+          <div class="team-skills">
+            <span class="team-skill">Figma</span>
+            <span class="team-skill">UX Research</span>
+            <span class="team-skill">Illustrator</span>
+          </div>
+        </div>
+      </div>
+      <!-- Team member 3 -->
+      <div class="team-card reveal d3">
+        <div class="team-card-top">
+          <div class="team-avatar">null</div>
+          <div class="team-name">APPLY - <em>contact-founder</em></div>
+          <div class="team-role">Frontend Developer</div>
+        </div>
+        <div class="team-card-body">
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis, quaerat! Magnam, culpa?</p>
+          <div class="team-skills">
+            <span class="team-skill">CSS/Animations</span>
+            <span class="team-skill">JavaScript</span>
+            <span class="team-skill">Performance</span>
+          </div>
+        </div>
+      </div>
+      <!-- Team member 4 -->
+      <div class="team-card reveal d4">
+        <div class="team-card-top">
+          <div class="team-avatar">null</div>
+          <div class="team-name">APPLY - <em>contact-founder</em></div>
+          <div class="team-role">Content & Courses</div>
+        </div>
+        <div class="team-card-body">
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis, quaerat! Magnam, culpa?</p>
+          <div class="team-skills">
+            <span class="team-skill">Curriculum Design</span>
+            <span class="team-skill">Copywriting</span>
+            <span class="team-skill">HTML Basics</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      const days  = Math.floor(diff / 86400000);
-      const hours = Math.floor((diff % 86400000) / 3600000);
-      const mins  = Math.floor((diff % 3600000)  / 60000);
-      const secs  = Math.floor((diff % 60000)    / 1000);
+  <!-- PROJECTS -->
+  <section class="projects-section" id="projects">
+    <div class="section-header reveal">
+      <div class="section-tag">Our Portfolio</div>
+      <h2 class="section-title">Work to be <span><em>Shipped</em></span></h2>
+      <p class="section-sub">From farms to fashion to towing — we build for everyone.</p>
+    </div>
+    <div class="projects-full-grid">
+      <!-- SUNRISE VALLEY FARMS -->
+      <div class="project-full-card reveal d1">
+        <div class="project-full-img">
+          <img src="sunrise-template.png" alt="">
+          <div class="project-status-badge"><span class="badge badge-red">✓ In Dev</span></div>
+        </div>
+        <div class="project-full-body">
+          <div class="project-tags" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="project-tag">E-Commerce</span>
+            <span class="project-tag">FARM</span>
+          </div>
+          <h3>SunRise Valley Farms</h3>
+          <p>A farm-to-table e-commerce experience that connects SunRise Valley's sustainable produce with health-conscious buyers. Clean UI, warm photography, and a checkout flow that converts.</p>
+          <div class="project-full-footer">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="project-tag" style="font-size:10px">HTML</span>
+              <span class="project-tag" style="font-size:10px">CSS</span>
+              <span class="project-tag" style="font-size:10px">J.S</span>
+            </div>
+            <a href="https://sunrise-valley-farms.vercel.app/" target="_blank" class="project-full-link">Preview →</a>
+          </div>
+        </div>
+      </div>
+      <!-- BEMILWIS BOUTIQUE -->
+      <div class="project-full-card reveal d2">
+        <div class="project-full-img">
+          <img src="bemilwis-template.png" alt="bemilwis profile">
+          <div class="project-status-badge"><span class="badge badge-red">✓ In Dev</span></div>
+        </div>
+        <div class="project-full-body">
+          <div class="project-tags" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="project-tag">Boutique</span>
+            <span class="project-tag">Fashion</span>
+          </div>
+          <h3>Bemilwis Boutique</h3>
+          <p>A curated fashion boutique featuring shoes and clothing that blends comfort with elegance. Timeless design meets seamless browsing on any device.</p>
+          <div class="project-full-footer">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="project-tag" style="font-size:10px">HTML</span>
+              <span class="project-tag" style="font-size:10px">CSS</span>
+              <span class="project-tag" style="font-size:10px">J.S</span>
+            </div>
+            <a href="https://bemilwis-umber.vercel.app/" target="_blank" class="project-full-link">Preview →</a>
+          </div>
+        </div>
+      </div>
+      <!-- EDGAR PHYSIOTHERAPY PORTFOLIO -->
+      <div class="project-full-card reveal d1">
+        <div class="project-full-img" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+          <img src="portfolio-physio.png" alt="portfolio profile">
+          <div class="project-status-badge"><span class="badge badge-green">✓ Live</span></div>
+        </div>
+        <div class="project-full-body">
+          <div class="project-tags" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="project-tag">Portfolio</span>
+            <span class="project-tag">Personal Brand</span>
+          </div>
+          <h3>Personal Physiotherapist Portfolio</h3>
+          <p>A personal portfolio for a Nairobi-based physiotherapist. Sports injury rehabilitation, Post-surgery recovery, and Personalized exercise programs that gaurantee full recovery.</p>
+          <div class="project-full-footer">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="project-tag" style="font-size:10px">HTML/CSS/JS</span>
+              <span class="project-tag" style="font-size:10px">GSAP</span>
+            </div>
+            <a href="https://bemilwis-umber.vercel.app/" target="_blank" class="project-full-link">Preview →</a>
+          </div>
+        </div>
+      </div>
+      <!-- DE-TOW SERVICES -->
+      <div class="project-full-card reveal d3">
+        <div class="project-full-img">
+          <img src="https://i.pinimg.com/736x/8b/b1/78/8bb178d5cd55485d3792dda4dcf67440.jpg" alt="tow servoces image">
+          <div class="project-status-badge"><span class="badge badge-red">✓ In Dev</span></div>
+        </div>
+        <div class="project-full-body">
+          <div class="project-tags" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="project-tag">Services</span>
+            <span class="project-tag">Automotive</span>
+          </div>
+          <h3>De-Tow Services</h3>
+          <p>Roadside assistance and towing services site built for fast action. The design screams reliability, and the contact flow gets drivers help immediately.</p>
+          <div class="project-full-footer">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="project-tag" style="font-size:10px">HTML</span>
+              <span class="project-tag" style="font-size:10px">CSS</span>
+              <span class="project-tag" style="font-size:10px">J.S</span>
+            </div>
+            <a href="https://de-tow.vercel.app/" target="_blank" class="project-full-link">Preview →</a>
+          </div>
+        </div>
+      </div>
+      <!-- EATERY -->
+      <div class="project-full-card reveal d2">
+        <div class="project-full-img" style="background:linear-gradient(135deg,#0f2027,#203a43)">
+          <img src="https://i.pinimg.com/736x/2d/54/fd/2d54fd3e677d9564eafe44cd7bf13e74.jpg" alt="eatery profile">
+          <div class="project-status-badge"><span class="badge badge-red">🔜 Coming Soon</span></div>
+        </div>
+        <div class="project-full-body">
+          <div class="project-tags" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="project-tag">Eatery</span>
+            <span class="project-tag">Hospitality</span>
+          </div>
+          <h3>Local Eatery Landing Page</h3>
+          <p>A high-converting landing page for a Nyeri eatery — mouth-watering visuals, menu integration, and an online reservation system.</p>
+          <div class="project-full-footer">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="project-tag" style="font-size:10px">HTML/CSS/JS</span>
+            </div>
+            <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim)">In Progress</span>
+          </div>
+        </div>
+      </div>
+      <!-- COMMUNITY LEARNING CENTER -->
+      <div class="project-full-card reveal d3">
+        <div class="project-full-img" style="background:linear-gradient(135deg,#1a0000,#3d0000)">
+          <img src="https://i.pinimg.com/736x/62/3b/75/623b757efbf1346777fd00b272473c4f.jpg" alt="community learning center">
+          <div class="project-status-badge"><span class="badge badge-red">🔜 Coming Soon</span></div>
+        </div>
+        <div class="project-full-body">
+          <div class="project-tags" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+            <span class="project-tag">Education</span>
+            <span class="project-tag">NGO</span>
+          </div>
+          <h3>Community Learning Center</h3>
+          <p>A clean, accessible website for a community learning center — course listings, volunteer sign-ups, and a donation section that actually converts.</p>
+          <div class="project-full-footer">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="project-tag" style="font-size:10px">HTML/CSS/JS</span>
+            </div>
+            <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim)">In Progress</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      flipUpdate(document.getElementById('cd-days'),  days);
-      flipUpdate(document.getElementById('cd-hours'), hours);
-      flipUpdate(document.getElementById('cd-mins'),  mins);
-      flipUpdate(document.getElementById('cd-secs'),  secs);
-    }
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">Casual <span>_Code_</span> Studios</div>
+        <p>A frontend web development agency from Nyeri, Kenya. We build websites that look incredible and work flawlessly.</p>
+        <div class="footer-socials">
+          <a href="https://github.com" target="_blank" class="footer-social-btn"><img src="github.jpg" alt="github"></a>
+          <a href="https://linkedin.com" target="_blank" class="footer-social-btn"><img src="linkedin.png" alt="linked in"></a>
+          <a href="https://instagram.com" target="_blank" class="footer-social-btn"><img src="instagram.png" alt="instagram"></a>
+          <a href="https://youtube.com" target="_blank" class="footer-social-btn"><img src="youtube.png" alt="youtube"></a>
+          <a href="https://wa.me/254111760757" target="_blank" class="footer-social-btn"><img src="whatsapp (1).png" alt="whatsapp"></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="index.html#hire">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="index.html#services">E-Commerce</a></li>
+          <li><a href="index.html#services">Portfolios</a></li>
+          <li><a href="index.html#services">Landing Pages</a></li>
+          <li><a href="index.html#services">Courses</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul class="footer-contacts">
+          <li><a href="mailto:kongobonface@gmail.com"><img src="mail.png" alt="mail"> Email</a></li>
+          <li><a href="https://wa.me/254111760757" target="_blank"><img src="whatsapp.png" alt="whatsapp"> WhatsApp</a></li>
+          <li><a href="tel:+254111760757"><img src="telephone.png" alt="phone"> Call</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Casual Code Studios.</span>
+      <span>HTML · CSS · JavaScript</span>
+    </div>
+  </footer>
 
-    tick();
-    setInterval(tick, 1000);
+  <!-- Modals (reused from index) -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="login-gate" style="background:var(--bg-card);border:1px solid var(--border-red);border-radius:var(--radius-lg);padding:48px;max-width:440px;width:100%;text-align:center;position:relative">
+      <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+      <div style="font-size:48px;margin-bottom:16px">🔐</div>
+      <h3 style="font-family:var(--font-display);font-size:26px;font-weight:800;margin-bottom:8px">Join CCS Community</h3>
+      <p style="color:var(--text-muted);margin-bottom:28px">Create an account to access all features.</p>
+      <div class="login-gate-tabs">
+        <button class="login-tab active" data-tab="tab-login">Sign In</button>
+        <button class="login-tab" data-tab="tab-register">Register</button>
+        <button class="login-tab" data-tab="tab-vip">VIP Code</button>
+      </div>
+      <div class="tab-content active" id="tab-login">
+        <form id="loginForm">
+          <div class="form-group"><label>Email</label><input type="email" name="email" class="form-input" placeholder="you@example.com" required></div>
+          <div class="form-group"><label>Password</label><input type="password" name="password" class="form-input" placeholder="Password" required></div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Sign In</button>
+        </form>
+      </div>
+      <div class="tab-content" id="tab-register">
+        <form id="registerForm">
+          <div class="form-group"><label>Name</label><input type="text" name="name" class="form-input" placeholder="Your name" required></div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" class="form-input" placeholder="you@example.com" required></div>
+          <div class="form-group"><label>Password</label><input type="password" name="password" class="form-input" placeholder="Min. 6 chars" required></div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Create Account</button>
+        </form>
+      </div>
+      <div class="tab-content" id="tab-vip">
+        <form id="vipCodeForm">
+          <div class="form-group"><label>VIP Code</label><input type="text" name="vipCode" class="form-input" placeholder="Enter VIP code" required style="text-transform:uppercase;letter-spacing:2px"></div>
+          <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:center">⭐ Activate VIP</button>
+        </form>
+      </div>
+    </div>
+  </div>
 
-    /* ── NOTIFY ── */
-    function handleNotify() {
-      const email = document.getElementById('notifyEmail').value.trim();
-      if (!email || !email.includes('@')) {
-        alert('Please enter a valid email address.');
-        return;
-      }
-      alert(`Got it! We'll notify ${email} when we launch. 🚀`);
-      document.getElementById('notifyEmail').value = '';
-    }
+  <div class="modal-overlay" id="articleModal">
+    <div class="article-modal">
+      <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
+      <div id="articleModalContent"></div>
+    </div>
+  </div>
 
-    /* ── PARTICLE CANVAS ── */
-    const canvas = document.getElementById('particles');
-    const ctx    = canvas.getContext('2d');
-    let W, H, dots = [];
-
-    function resize() {
-      W = canvas.width  = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-
-    function initDots() {
-      dots = Array.from({ length: 60 }, () => ({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        r: Math.random() * 1.5 + 0.3,
-        dx: (Math.random() - 0.5) * 0.3,
-        dy: (Math.random() - 0.5) * 0.3,
-        a: Math.random()
-      }));
-    }
-
-    function drawDots() {
-      ctx.clearRect(0, 0, W, H);
-      dots.forEach(d => {
-        d.x += d.dx; d.y += d.dy;
-        if (d.x < 0) d.x = W; if (d.x > W) d.x = 0;
-        if (d.y < 0) d.y = H; if (d.y > H) d.y = 0;
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(230,57,70,${d.a * 0.6})`;
-        ctx.fill();
-      });
-
-      // draw connecting lines
-      for (let i = 0; i < dots.length; i++) {
-        for (let j = i + 1; j < dots.length; j++) {
-          const dist = Math.hypot(dots[i].x - dots[j].x, dots[i].y - dots[j].y);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(dots[i].x, dots[i].y);
-            ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.strokeStyle = `rgba(230,57,70,${(1 - dist / 120) * 0.12})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
-        }
-      }
-      requestAnimationFrame(drawDots);
-    }
-
-    resize();
-    initDots();
-    drawDots();
-    window.addEventListener('resize', () => { resize(); initDots(); });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

@@ -1,30 +1,19 @@
 /* ============================================================
-   CASUAL CODE STUDIOS — UNIFIED APP JS (v2.0)
+   CASUAL CODE STUDIOS — UNIFIED APP JS (v3.0 — Offline Edition)
    Pages: index.html, about.html, blog.html, admin.html, course.html
-   
-   ── HOW BACKEND CONNECTION WORKS ─────────────────────────────
-   This file communicates with api/index.php via fetch() calls.
-   Every form submission, login, register, and admin action
-   sends a POST request to api/index.php with a JSON body:
-   
-     { "action": "action_name", ...other fields }
-   
-   Authenticated requests include a Bearer token in the header:
-   
-     Authorization: Bearer <token-from-localStorage>
-   
-   The token is stored in localStorage as 'ccs-token'.
-   
-   Helper function: apiCall(action, data) — see Section 2.
+
+   All data is stored and read from localStorage.
+   No backend or network calls are made anywhere in this file.
    ============================================================ */
 
 'use strict';
+
 
 /* ============================================================
    SECTION 1: THEME TOGGLE
    Runs immediately to prevent flash of wrong theme.
    ============================================================ */
-(function() {
+(function () {
   const saved = localStorage.getItem('ccs-theme') || 'dark';
   if (saved === 'light') document.body.classList.add('light-mode');
 })();
@@ -55,240 +44,130 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 /* ============================================================
-   SECTION 2: BACKEND API CLIENT
-   ── Central fetch wrapper that talks to api/index.php ──
-   
-   USAGE:
-     const res = await apiCall('login', { email, password });
-     if (res.success) { ... }
-   
-   TOKEN HANDLING:
-     If a user/admin token exists in localStorage ('ccs-token'),
-     it is automatically sent as Authorization: Bearer <token>.
-   ============================================================ */
-
-const API_URL = 'api/index.php'; // Path to PHP backend
-
-async function apiCall(action, data = {}, useAdminToken = false) {
-  /* Determine which token to send.
-   * Regular users use 'ccs-token', admin uses 'ccs-admin-token'. */
-  const tokenKey = useAdminToken ? 'ccs-admin-token' : 'ccs-token';
-  const token    = localStorage.getItem(tokenKey);
-
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-
-  try {
-    const response = await fetch(API_URL, {
-      method:  'POST',
-      headers: headers,
-      body:    JSON.stringify({ action, ...data })
-    });
-
-    const json = await response.json();
-    return json;                              // { success, ...data } or { success: false, error }
-  } catch (err) {
-    console.error('[CCS API] Network/fetch error:', err);
-    return { success: false, error: 'Network error — could not reach server.' };
-  }
-}
-window.apiCall = apiCall;
-
-
-/* ============================================================
-   SECTION 3: AUTH SYSTEM
+   SECTION 2: AUTH SYSTEM (localStorage only)
    ── Handles login, register, logout, VIP codes ──
-   
-   TOKEN FLOW:
-   1. User submits login/register form
-   2. apiCall sends credentials to api/index.php
-   3. PHP verifies, creates a DB session, returns { token, user }
-   4. Token stored in localStorage as 'ccs-token'
-   5. User object stored as 'ccs-user' (JSON)
-   6. All subsequent requests include Authorization: Bearer <token>
-   
-   FALLBACK (offline/no PHP):
-   If the API call fails, the system falls back to localStorage-only
-   mode (original behaviour) so the site works without a server.
+   All user data lives in localStorage under these keys:
+     ccs-user       → current logged-in user object
+     ccs-users      → array of all registered users
+     ccs-admin      → admin session object
+     ccs-vip-codes  → array of VIP code objects
    ============================================================ */
 
 const Auth = {
   key:      'ccs-user',
-  tokenKey: 'ccs-token',
   adminKey: 'ccs-admin',
-  adminTokenKey: 'ccs-admin-token',
 
-  /* Returns the stored user object or null */
-  get user()      { return JSON.parse(localStorage.getItem(this.key) || 'null'); },
-  get token()     { return localStorage.getItem(this.tokenKey); },
-  get isLoggedIn(){ return !!this.user; },
-  get isAdmin()   { return !!localStorage.getItem(this.adminTokenKey) || !!JSON.parse(localStorage.getItem(this.adminKey)||'null'); },
-  get isVip()     { return this.user && (this.user.vip || this.user.role === 'vip'); },
-  get hasCourseAccess() { return this.isAdmin || this.isVip || (this.user && this.user.course_access); },
+  get user()           { return JSON.parse(localStorage.getItem(this.key) || 'null'); },
+  get isLoggedIn()     { return !!this.user; },
+  get isAdmin()        { return !!JSON.parse(localStorage.getItem(this.adminKey) || 'null'); },
+  get isVip()          { return this.user && (this.user.vip || this.user.role === 'vip'); },
+  get hasCourseAccess(){ return this.isAdmin || this.isVip || (this.user && this.user.course_access); },
 
-  /* ── LOGIN ──
-   * Tries PHP backend first, falls back to localStorage on failure.
-   * On success: stores { token, user } in localStorage. */
-  async login(email, password) {
-    // Try PHP backend first
-    const res = await apiCall('login', { email, password });
-
-    if (res.success) {
-      // BACKEND SUCCESS: store server-issued token and user
-      localStorage.setItem(this.tokenKey, res.token);
-      localStorage.setItem(this.key, JSON.stringify(res.user));
+  /* ── LOGIN ── */
+  login(email, password) {
+    const users = JSON.parse(localStorage.getItem('ccs-users') || '[]');
+    const found = users.find(u => u.email === email && u.password === password);
+    if (found) {
+      localStorage.setItem(this.key, JSON.stringify(found));
       return true;
     }
-
-    // FALLBACK: localStorage-only (no server)
-    if (res.error && res.error.includes('Network')) {
-      const users = JSON.parse(localStorage.getItem('ccs-users') || '[]');
-      const found = users.find(u => u.email === email && u.password === password);
-      if (found) {
-        localStorage.setItem(this.key, JSON.stringify(found));
-        return true;
-      }
-      // Demo mode — accept any valid email+pass
-      if (email && password.length >= 6) {
-        const u = { id: Date.now(), email, name: email.split('@')[0], vip: false, role: 'member' };
-        localStorage.setItem(this.key, JSON.stringify(u));
-        return true;
-      }
-    }
-
-    return res.error || false;
-  },
-
-  /* ── REGISTER ──
-   * Sends to PHP, falls back to localStorage. */
-  async register(email, password, name) {
-    const res = await apiCall('register', { name, email, password });
-
-    if (res.success) {
-      localStorage.setItem(this.tokenKey, res.token);
-      localStorage.setItem(this.key, JSON.stringify(res.user));
-      // Also sync to localStorage users list (for offline fallback)
-      this._syncLocalUser(res.user);
-      return true;
-    }
-
-    // Fallback
-    if (res.error && res.error.includes('Network')) {
-      const users = JSON.parse(localStorage.getItem('ccs-users') || '[]');
-      if (users.find(u => u.email === email)) return 'exists';
-      const u = { id: Date.now(), email, name, password, vip: false, role: 'member', joinDate: new Date().toISOString() };
-      users.push(u);
-      localStorage.setItem('ccs-users', JSON.stringify(users));
+    // Accept any valid email + 6+ char password (demo / first-time user)
+    if (email && password.length >= 6) {
+      const u = { id: Date.now(), email, name: email.split('@')[0], vip: false, role: 'member' };
       localStorage.setItem(this.key, JSON.stringify(u));
       return true;
     }
-
-    return res.error || false;
+    return 'Invalid email or password.';
   },
 
-  /* ── VIP CODE ──
-   * Sends code to PHP; marks user as VIP on success. */
-  async applyVipCode(code) {
-    const res = await apiCall('apply_vip_code', { code });
+  /* ── REGISTER ── */
+  register(email, password, name) {
+    const users = JSON.parse(localStorage.getItem('ccs-users') || '[]');
+    if (users.find(u => u.email === email)) return 'exists';
+    const u = {
+      id: Date.now(), email, name, password,
+      vip: false, role: 'member', joinDate: new Date().toISOString()
+    };
+    users.push(u);
+    localStorage.setItem('ccs-users', JSON.stringify(users));
+    localStorage.setItem(this.key, JSON.stringify(u));
 
-    if (res.success) {
-      const user = this.user;
-      if (user) { user.vip = true; user.role = 'vip'; localStorage.setItem(this.key, JSON.stringify(user)); }
-      return true;
+    // Also register into members list for admin panel
+    const members = JSON.parse(localStorage.getItem('ccs-members') || '[]');
+    if (!members.find(m => m.email === email)) {
+      members.push({ id: u.id, name, email, role: 'member', vip: false, joinDate: u.joinDate });
+      localStorage.setItem('ccs-members', JSON.stringify(members));
     }
-
-    // Fallback: built-in codes
-    if (res.error && res.error.includes('Network')) {
-      const builtin = ['VIP2026', 'CCSEXCL', 'PREMIUM1'];
-      if (builtin.includes(code.toUpperCase())) {
-        const u = this.user || { id: Date.now(), name:'VIP Member', email:'', vip:true, role:'vip' };
-        u.vip = true; u.role = 'vip';
-        localStorage.setItem(this.key, JSON.stringify(u));
-        return true;
-      }
-    }
-
-    return false;
+    return true;
   },
 
-  /* ── ADMIN LOGIN ──
-   * Sends credentials; stores admin token separately. */
-  async loginAdmin(email, password) {
-    const res = await apiCall('admin_login', { email, password });
+  /* ── VIP CODE ── */
+  applyVipCode(code) {
+    const codes = JSON.parse(localStorage.getItem('ccs-vip-codes') || '[]');
+    const builtin = ['VIP2026', 'CCSEXCL', 'PREMIUM1'];
+    const validCode = codes.find(c => c.code === code && !c.used);
+    const isBuiltin = builtin.includes(code);
 
-    if (res.success) {
-      // Store admin token under a different key to avoid conflicts with user token
-      localStorage.setItem(this.adminTokenKey, res.token);
+    if (!validCode && !isBuiltin) return false;
+
+    // Mark code as used if it's in the stored list
+    if (validCode) {
+      validCode.used = true;
+      localStorage.setItem('ccs-vip-codes', JSON.stringify(codes));
+    }
+
+    const u = this.user || { id: Date.now(), name: 'VIP Member', email: '', vip: true, role: 'vip' };
+    u.vip = true;
+    u.role = 'vip';
+    localStorage.setItem(this.key, JSON.stringify(u));
+
+    // Upgrade in users list too
+    const users = JSON.parse(localStorage.getItem('ccs-users') || '[]');
+    const idx = users.findIndex(x => x.id === u.id);
+    if (idx > -1) { users[idx] = u; localStorage.setItem('ccs-users', JSON.stringify(users)); }
+
+    return true;
+  },
+
+  /* ── ADMIN LOGIN ── */
+  loginAdmin(email, password) {
+    if (
+      (email === 'admin@lamine.kidd' && password === 'ccs.lamine.94') ||
+      password === 'CCS@admin2026'
+    ) {
       localStorage.setItem(this.adminKey, JSON.stringify({ role: 'admin', email }));
       return true;
     }
-
-    // Fallback: hardcoded credentials
-    if (res.error && res.error.includes('Network')) {
-      if ((email === 'admin@lamine.kidd' && password === 'ccs.lamine.94') || password === 'CCS@admin2026') {
-        localStorage.setItem(this.adminKey, JSON.stringify({ role: 'admin', email }));
-        return true;
-      }
-    }
-
     return false;
   },
 
-  /* ── LOGOUT ──
-   * Tells PHP to invalidate the session, then clears localStorage. */
-  async logout() {
-    await apiCall('logout'); // Invalidate server-side session
+  /* ── LOGOUT ── */
+  logout() {
     localStorage.removeItem(this.key);
-    localStorage.removeItem(this.tokenKey);
   },
 
-  async logoutAdmin() {
-    // Use admin token for logout
-    const token = localStorage.getItem(this.adminTokenKey);
-    if (token) {
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ action: 'logout' })
-      }).catch(() => {});
-    }
+  logoutAdmin() {
     localStorage.removeItem(this.adminKey);
-    localStorage.removeItem(this.adminTokenKey);
-  },
-
-  /* Sync a user to the local users list (offline fallback) */
-  _syncLocalUser(user) {
-    const users = JSON.parse(localStorage.getItem('ccs-users') || '[]');
-    if (!users.find(u => u.email === user.email)) {
-      users.push({ ...user, joinDate: new Date().toISOString() });
-      localStorage.setItem('ccs-users', JSON.stringify(users));
-    }
   }
 };
 window.Auth = Auth;
 
 
 /* ============================================================
-   SECTION 4: AUTH UI UPDATER
+   SECTION 3: AUTH UI UPDATER
    Runs on every page load and after login/logout.
    ============================================================ */
 
 function updateAuthUI() {
-  const loggedOut = document.querySelectorAll('.show-if-logged-out');
-  const loggedIn  = document.querySelectorAll('.show-if-logged-in');
-  const vipEls    = document.querySelectorAll('.show-if-vip');
-  const adminEls  = document.querySelectorAll('.show-if-admin');
-  const names     = document.querySelectorAll('.user-display-name');
+  document.querySelectorAll('.show-if-logged-out').forEach(el => el.style.display = Auth.isLoggedIn ? 'none' : '');
+  document.querySelectorAll('.show-if-logged-in').forEach(el  => el.style.display = Auth.isLoggedIn ? '' : 'none');
+  document.querySelectorAll('.show-if-vip').forEach(el        => el.style.display = Auth.isVip ? '' : 'none');
+  document.querySelectorAll('.show-if-admin').forEach(el      => el.style.display = Auth.isAdmin ? '' : 'none');
+  document.querySelectorAll('.user-display-name').forEach(el  => { if (Auth.user) el.textContent = Auth.user.name; });
+
   const authWrap  = document.getElementById('authBtnWrap');
   const userWrap  = document.getElementById('userBtnWrap');
   const userGreet = document.getElementById('userGreet');
-
-  loggedOut.forEach(el => el.style.display = Auth.isLoggedIn ? 'none' : '');
-  loggedIn.forEach(el  => el.style.display = Auth.isLoggedIn ? '' : 'none');
-  vipEls.forEach(el    => el.style.display = Auth.isVip ? '' : 'none');
-  adminEls.forEach(el  => el.style.display = Auth.isAdmin ? '' : 'none');
-  names.forEach(el     => { if (Auth.user) el.textContent = Auth.user.name; });
-
   if (authWrap && userWrap) {
     if (Auth.isLoggedIn) {
       authWrap.classList.add('hidden');
@@ -310,17 +189,12 @@ window.updateAuthUI = updateAuthUI;
 
 
 /* ============================================================
-   SECTION 5: FORM SETUP
-   All form submissions are routed to the PHP backend.
-   ── Connection map ──
-   loginForm    → apiCall('login')          → api/index.php
-   registerForm → apiCall('register')       → api/index.php
-   vipCodeForm  → apiCall('apply_vip_code') → api/index.php
-   hireForm     → apiCall('submit_inquiry') → api/index.php
-   contactForm  → apiCall('submit_inquiry') → api/index.php
+   SECTION 4: FORM SETUP
+   All forms save to localStorage — no network calls.
    ============================================================ */
 
 function setupForms() {
+
   // ── Tab switching for login modal ──
   document.querySelectorAll('.login-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -331,10 +205,10 @@ function setupForms() {
     });
   });
 
-  // ── LOGIN FORM → api/index.php action=login ──
+  // ── LOGIN FORM ──
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
-    loginForm.addEventListener('submit', async e => {
+    loginForm.addEventListener('submit', e => {
       e.preventDefault();
       const email = loginForm.querySelector('[name="email"]').value.trim();
       const pass  = loginForm.querySelector('[name="password"]').value;
@@ -343,7 +217,7 @@ function setupForms() {
       btn.textContent = 'Signing in…';
       btn.disabled = true;
 
-      const result = await Auth.login(email, pass);
+      const result = Auth.login(email, pass);
 
       btn.disabled = false;
       btn.textContent = 'Sign In';
@@ -358,20 +232,22 @@ function setupForms() {
     });
   }
 
-  // ── REGISTER FORM → api/index.php action=register ──
+  // ── REGISTER FORM ──
   const registerForm = document.getElementById('registerForm');
   if (registerForm) {
-    registerForm.addEventListener('submit', async e => {
+    registerForm.addEventListener('submit', e => {
       e.preventDefault();
       const name  = registerForm.querySelector('[name="name"]').value.trim();
       const email = registerForm.querySelector('[name="email"]').value.trim();
       const pass  = registerForm.querySelector('[name="password"]').value;
       const btn   = registerForm.querySelector('[type="submit"]');
 
+      if (pass.length < 6) { showToast('Password must be at least 6 characters.', '⚠️'); return; }
+
       btn.textContent = 'Creating account…';
       btn.disabled = true;
 
-      const result = await Auth.register(email, pass, name);
+      const result = Auth.register(email, pass, name);
 
       btn.disabled = false;
       btn.textContent = 'Create Account 🎉';
@@ -383,15 +259,15 @@ function setupForms() {
       } else if (result === 'exists') {
         showToast('An account with this email already exists.', '⚠️');
       } else {
-        showToast(typeof result === 'string' ? result : 'Registration failed. Please try again.', '❌');
+        showToast('Registration failed. Please try again.', '❌');
       }
     });
   }
 
-  // ── VIP CODE FORM → api/index.php action=apply_vip_code ──
+  // ── VIP CODE FORM ──
   const vipForm = document.getElementById('vipCodeForm');
   if (vipForm) {
-    vipForm.addEventListener('submit', async e => {
+    vipForm.addEventListener('submit', e => {
       e.preventDefault();
       const code = vipForm.querySelector('[name="vipCode"]').value.trim().toUpperCase();
       const btn  = vipForm.querySelector('[type="submit"]');
@@ -404,7 +280,7 @@ function setupForms() {
       btn.textContent = 'Activating…';
       btn.disabled = true;
 
-      const result = await Auth.applyVipCode(code);
+      const result = Auth.applyVipCode(code);
 
       btn.disabled = false;
       btn.textContent = '⭐ Activate VIP';
@@ -419,91 +295,34 @@ function setupForms() {
     });
   }
 
-  // ── HIRE / INQUIRY FORM → api/index.php action=submit_inquiry ──
-  const hireForm = document.getElementById('hireForm');
-  if (hireForm) {
-    hireForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      const data = new FormData(e.target);
-      const btn  = hireForm.querySelector('[type="submit"]');
-      btn.textContent = 'Sending…';
-      btn.disabled = true;
+  // hireForm and contactForm are handled natively by Formspree (action + method="POST" on the <form> elements).
+  // No JS interception needed for these two forms.
+}
 
-      const res = await apiCall('submit_inquiry', {
-        name:    data.get('name'),
-        contact: data.get('contact'),
-        service: data.get('service'),
-        message: data.get('brief')
-      });
-
-      btn.disabled = false;
-      btn.textContent = 'Send Enquiry →';
-
-      if (res.success) {
-        closeModal('hireModal');
-        showToast(res.message || 'Enquiry sent! We\'ll be in touch. 🚀', '✓');
-        hireForm.reset();
-      } else {
-        showToast(res.error || 'Could not send. Please try WhatsApp instead.', '❌');
-      }
-    });
-  }
-
-  // ── CONTACT FORM → api/index.php action=submit_inquiry ──
-  const contactForm = document.getElementById('contactForm');
-  if (contactForm) {
-    contactForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      const data = new FormData(e.target);
-      const btn  = contactForm.querySelector('[type="submit"]');
-      btn.textContent = 'Sending…';
-      btn.disabled = true;
-
-      const res = await apiCall('submit_inquiry', {
-        name:    data.get('name'),
-        contact: data.get('email'),
-        service: data.get('type'),
-        message: data.get('message')
-      });
-
-      btn.disabled = false;
-      btn.textContent = 'Send Message →';
-
-      if (res.success) {
-        showToast('Message sent! 🚀', '✓');
-        contactForm.reset();
-      } else {
-        showToast(res.error || 'Could not send. Please use WhatsApp.', '❌');
-      }
-    });
-  }
+/* Save an inquiry to localStorage */
+function _saveInquiry(inquiry) {
+  const inquiries = JSON.parse(localStorage.getItem('ccs-inquiries') || '[]');
+  inquiries.unshift(inquiry);
+  localStorage.setItem('ccs-inquiries', JSON.stringify(inquiries));
 }
 
 
 /* ============================================================
-   SECTION 6: BLOG POST RENDERING
-   ── Fetches posts from PHP backend, falls back to localStorage ──
-   Connection: renderPosts() → apiCall('get_posts') → api/index.php
+   SECTION 5: BLOG POST RENDERING
+   Posts are read from and written to localStorage.
    ============================================================ */
 
-async function getStoredPosts() {
-  const res = await apiCall('get_posts', { category: 'all' });
-
-  if (res.success && res.posts) return res.posts;
-
-  // Fallback: localStorage posts
+function getStoredPosts() {
   return JSON.parse(localStorage.getItem('ccs-posts') || '[]');
 }
 window.getStoredPosts = getStoredPosts;
 
-window.renderPosts = async function(cat = 'all') {
+window.renderPosts = function (cat = 'all') {
   window._currentBlogCat = cat;
   const grid = document.getElementById('postsGrid');
   if (!grid) return;
 
-  grid.innerHTML = '<div style="color:var(--text-muted);padding:40px;text-align:center">Loading posts…</div>';
-
-  let posts = await getStoredPosts();
+  let posts = getStoredPosts();
   if (cat !== 'all') posts = posts.filter(p => p.category === cat);
 
   if (!posts.length) {
@@ -511,13 +330,13 @@ window.renderPosts = async function(cat = 'all') {
     return;
   }
 
-  const catColors = { tutorial:'#e63946', showcase:'#3b82f6', news:'#10b981', beforeafter:'#8b5cf6' };
+  const catColors = { tutorial: '#e63946', showcase: '#3b82f6', news: '#10b981', beforeafter: '#8b5cf6' };
 
   grid.innerHTML = posts.map(post => {
     const locked = post.locked && !Auth.isLoggedIn;
     return `
-      <article class="post-card ${locked ? 'locked' : ''}" onclick="openPost(${post.id || post.id})" style="cursor:pointer">
-        <div class="post-cat-tag" style="background:${catColors[post.category]||'#e63946'}22;color:${catColors[post.category]||'#e63946'};border:1px solid ${catColors[post.category]||'#e63946'}44">${post.cat_label || post.catLabel || post.category}</div>
+      <article class="post-card ${locked ? 'locked' : ''}" onclick="openPost(${post.id})" style="cursor:pointer">
+        <div class="post-cat-tag" style="background:${catColors[post.category] || '#e63946'}22;color:${catColors[post.category] || '#e63946'};border:1px solid ${catColors[post.category] || '#e63946'}44">${post.cat_label || post.catLabel || post.category}</div>
         <h3 class="post-title">${post.title}</h3>
         <p class="post-excerpt">${post.excerpt}</p>
         <div class="post-meta"><span>${post.author || 'CCS Team'}</span><span>${post.read_time || post.readTime || '5 min read'}</span></div>
@@ -526,9 +345,8 @@ window.renderPosts = async function(cat = 'all') {
   }).join('');
 };
 
-window.openPost = async function(id) {
-  const posts = await getStoredPosts();
-  const post  = posts.find(p => String(p.id) === String(id));
+window.openPost = function (id) {
+  const post = getStoredPosts().find(p => String(p.id) === String(id));
   if (!post) return;
 
   if (post.locked && !Auth.isLoggedIn) {
@@ -548,92 +366,34 @@ window.openPost = async function(id) {
 
 
 /* ============================================================
-   SECTION 7: ADMIN DASHBOARD
-   ── All admin functions now call the PHP backend ──
-   
-   Connection pattern:
-   loadAdminData()       → apiCall('get_stats', {}, true)   → api/index.php
-   loadMembersList()     → apiCall('get_members', {}, true)  → api/index.php
-   makeVipAdmin(id)      → apiCall('make_vip', {}, true)     → api/index.php
-   removeMemberAdmin(id) → apiCall('remove_member', {}, true)→ api/index.php
-   savePost()            → apiCall('save_post', {}, true)    → api/index.php
-   generateVipCode()     → apiCall('generate_vip_code',true) → api/index.php
-   
-   NOTE: All admin calls pass useAdminToken=true so the
-   Authorization header uses 'ccs-admin-token'.
+   SECTION 6: ADMIN DASHBOARD (localStorage only)
    ============================================================ */
 
-/* Admin panel navigation */
-window.showPanel = function(name) {
+window.showPanel = function (name) {
   document.querySelectorAll('.adm-panel').forEach(p => p.classList.add('hidden'));
   document.querySelectorAll('.adm-nav-btn').forEach(b => b.classList.remove('active'));
   const panel = document.getElementById(`panel-${name}`);
   if (panel) panel.classList.remove('hidden');
   const btn = document.querySelector(`.adm-nav-btn[onclick*="'${name}'"]`);
   if (btn) btn.classList.add('active');
-  const titles = { overview:'Overview', posts:'Blog Posts', members:'Members', vip:'VIP Members', inquiries:'Inquiries', settings:'Settings', courses:'Course Access' };
-  const subs   = { overview:'Welcome back, Admin 🎯', posts:'Manage blog content', members:'Manage community members', vip:'VIP codes & members', inquiries:'Client enquiries', settings:'Admin preferences', courses:'HTML Course Access Control' };
-  document.getElementById('panelTitle').textContent = titles[name] || name;
-  document.getElementById('panelSub').textContent   = subs[name]   || '';
+  const titles = { overview: 'Overview', posts: 'Blog Posts', members: 'Members', vip: 'VIP Members', inquiries: 'Inquiries', settings: 'Settings', courses: 'Course Access' };
+  const subs   = { overview: 'Welcome back, Admin 🎯', posts: 'Manage blog content', members: 'Manage community members', vip: 'VIP codes & members', inquiries: 'Client enquiries', settings: 'Admin preferences', courses: 'HTML Course Access Control' };
+  const titleEl = document.getElementById('panelTitle');
+  const subEl   = document.getElementById('panelSub');
+  if (titleEl) titleEl.textContent = titles[name] || name;
+  if (subEl)   subEl.textContent   = subs[name]   || '';
 
-  // Load fresh data when switching panels
-  if (name === 'overview') loadAdminData();
-  if (name === 'members')  loadMembersList();
-  if (name === 'courses')  loadCourseAccessPanel();
+  if (name === 'overview')  loadAdminData();
+  if (name === 'members')   loadMembersList();
+  if (name === 'vip')       loadVipPanel();
+  if (name === 'inquiries') loadInquiriesList();
+  if (name === 'courses')   loadCourseAccessPanel();
 };
 
-/* Load all admin overview data from PHP backend */
-async function loadAdminData() {
-  /* ── BACKEND CALL ──
-   * GET /api/index.php { action: 'get_stats' }
-   * Authorization: Bearer <admin-token>
-   * Returns aggregated counts + recent items */
-  const res = await apiCall('get_stats', {}, true);
-
-  if (res.success) {
-    // Update stat counters
-    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    setEl('totalMembers',   res.stats.total_members);
-    setEl('totalVip',       res.stats.total_vip);
-    setEl('totalPosts',     res.stats.total_posts);
-    setEl('totalInquiries', res.stats.total_inquiries);
-    setEl('postCount',      res.stats.total_posts);
-    setEl('memberCount',    res.stats.total_members);
-    setEl('inquiryCount',   res.stats.total_inquiries);
-    setEl('vipCount',       res.stats.total_vip);
-
-    // Recent members list
-    const membersEl = document.getElementById('recentMembers');
-    if (membersEl) {
-      membersEl.innerHTML = res.stats.recent_members.map(m =>
-        `<div class="adm-list-item"><span>${m.name}</span><span style="color:var(--text-muted);font-size:12px">${m.email}</span></div>`
-      ).join('') || '<p style="color:var(--text-muted);padding:20px;text-align:center">No members yet.</p>';
-    }
-
-    // Recent inquiries
-    const inqEl = document.getElementById('recentInquiries');
-    if (inqEl) {
-      inqEl.innerHTML = res.stats.recent_inquiries.map(i =>
-        `<div class="adm-list-item"><span>${i.name}</span><span style="color:var(--text-muted);font-size:12px">${i.service || 'General'}</span></div>`
-      ).join('') || '<p style="color:var(--text-muted);padding:20px;text-align:center">No inquiries yet.</p>';
-    }
-  } else {
-    // Fallback: read from localStorage (offline mode)
-    _loadAdminDataFromLocalStorage();
-  }
-
-  // Also load posts and VIP data
-  await loadPostsList();
-  await loadVipPanel();
-  await loadInquiriesList();
-}
-
-/* Fallback: load stats from localStorage when PHP not available */
-function _loadAdminDataFromLocalStorage() {
-  const members   = JSON.parse(localStorage.getItem('ccs-members') || '[]');
-  const posts     = JSON.parse(localStorage.getItem('ccs-posts')   || '[]');
-  const inquiries = JSON.parse(localStorage.getItem('ccs-inquiries')|| '[]');
-  const codes     = JSON.parse(localStorage.getItem('ccs-vip-codes')|| '[]');
+function loadAdminData() {
+  const members   = JSON.parse(localStorage.getItem('ccs-members')   || '[]');
+  const posts     = JSON.parse(localStorage.getItem('ccs-posts')     || '[]');
+  const inquiries = JSON.parse(localStorage.getItem('ccs-inquiries') || '[]');
   const vipCount  = members.filter(m => m.vip || m.role === 'vip').length;
 
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -645,18 +405,28 @@ function _loadAdminDataFromLocalStorage() {
   setEl('memberCount',    members.length);
   setEl('inquiryCount',   inquiries.length);
   setEl('vipCount',       vipCount);
+
+  const membersEl = document.getElementById('recentMembers');
+  if (membersEl) {
+    membersEl.innerHTML = members.slice(0, 5).map(m =>
+      `<div class="adm-list-item"><span>${m.name}</span><span style="color:var(--text-muted);font-size:12px">${m.email}</span></div>`
+    ).join('') || '<p style="color:var(--text-muted);padding:20px;text-align:center">No members yet.</p>';
+  }
+
+  const inqEl = document.getElementById('recentInquiries');
+  if (inqEl) {
+    inqEl.innerHTML = inquiries.slice(0, 5).map(i =>
+      `<div class="adm-list-item"><span>${i.name}</span><span style="color:var(--text-muted);font-size:12px">${i.service || 'General'}</span></div>`
+    ).join('') || '<p style="color:var(--text-muted);padding:20px;text-align:center">No inquiries yet.</p>';
+  }
+
+  loadPostsList();
 }
 
-/* Load and render posts list in admin panel */
-async function loadPostsList() {
-  /* ── BACKEND CALL ──
-   * GET /api/index.php { action: 'get_posts', category: 'all' }
-   * Authorization: Bearer <admin-token> */
+function loadPostsList() {
   const postsEl = document.getElementById('postsList');
   if (!postsEl) return;
-
-  const res = await apiCall('get_posts', { category: 'all' }, true);
-  const posts = res.success ? res.posts : JSON.parse(localStorage.getItem('ccs-posts') || '[]');
+  const posts = getStoredPosts();
 
   if (!posts.length) {
     postsEl.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">No posts yet. Create your first post! ✍️</p>';
@@ -679,16 +449,10 @@ async function loadPostsList() {
     </table>`;
 }
 
-/* Load members list in admin panel */
-async function loadMembersList() {
+function loadMembersList() {
   const container = document.getElementById('membersList');
   if (!container) return;
-
-  /* ── BACKEND CALL ──
-   * GET /api/index.php { action: 'get_members' }
-   * Authorization: Bearer <admin-token> */
-  const res = await apiCall('get_members', {}, true);
-  const members = res.success ? res.members : JSON.parse(localStorage.getItem('ccs-members') || '[]');
+  const members = JSON.parse(localStorage.getItem('ccs-members') || '[]');
 
   if (!members.length) {
     container.innerHTML = '<p style="color:var(--text-muted);padding:20px;text-align:center">No members yet.</p>';
@@ -704,7 +468,7 @@ async function loadMembersList() {
             <td>${m.name}</td>
             <td>${m.email || '—'}</td>
             <td><span class="item-badge ${(m.vip || m.role === 'vip') ? 'badge-vip' : 'badge-member'}">${(m.vip || m.role === 'vip') ? '⭐ VIP' : 'Member'}</span></td>
-            <td>${m.join_date || m.joinDate ? new Date(m.join_date || m.joinDate).toLocaleDateString() : '—'}</td>
+            <td>${m.joinDate ? new Date(m.joinDate).toLocaleDateString() : '—'}</td>
             <td>
               ${!(m.vip || m.role === 'vip') ? `<button class="tbl-action" onclick="makeVipAdmin(${m.id})">Make VIP</button>` : ''}
               <button class="tbl-action danger" onclick="removeMemberAdmin(${m.id})">Remove</button>
@@ -716,41 +480,29 @@ async function loadMembersList() {
   if (countEl) countEl.textContent = members.length;
 }
 
-/* Make a member VIP */
-window.makeVipAdmin = async function(id) {
-  /* ── BACKEND CALL ──
-   * POST /api/index.php { action: 'make_vip', user_id: id }
-   * Authorization: Bearer <admin-token> */
-  const res = await apiCall('make_vip', { user_id: id }, true);
-  if (res.success) {
-    loadMembersList();
-    loadAdminData();
-    showToast('Member upgraded to VIP! ⭐');
-  } else {
-    showToast(res.error || 'Failed to upgrade member.', '❌');
-  }
+window.makeVipAdmin = function (id) {
+  const members = JSON.parse(localStorage.getItem('ccs-members') || '[]');
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  m.vip = true;
+  m.role = 'vip';
+  localStorage.setItem('ccs-members', JSON.stringify(members));
+  loadMembersList();
+  loadAdminData();
+  showToast('Member upgraded to VIP! ⭐');
 };
 
-/* Remove a member */
-window.removeMemberAdmin = async function(id) {
+window.removeMemberAdmin = function (id) {
   if (!confirm('Remove this member? This cannot be undone.')) return;
-  /* ── BACKEND CALL ──
-   * POST /api/index.php { action: 'remove_member', user_id: id } */
-  const res = await apiCall('remove_member', { user_id: id }, true);
-  if (res.success) {
-    loadMembersList();
-    loadAdminData();
-    showToast('Member removed.', '🗑️');
-  }
+  const members = JSON.parse(localStorage.getItem('ccs-members') || '[]').filter(m => m.id !== id);
+  localStorage.setItem('ccs-members', JSON.stringify(members));
+  loadMembersList();
+  loadAdminData();
+  showToast('Member removed.', '🗑️');
 };
 
-/* Load VIP panel */
-async function loadVipPanel() {
-  /* ── BACKEND CALL ──
-   * POST /api/index.php { action: 'get_vip_codes' } */
-  const codesRes = await apiCall('get_vip_codes', {}, true);
-  const codes = codesRes.success ? codesRes.codes : JSON.parse(localStorage.getItem('ccs-vip-codes') || '[]');
-
+function loadVipPanel() {
+  const codes = JSON.parse(localStorage.getItem('ccs-vip-codes') || '[]');
   const codesEl = document.getElementById('vipCodesList');
   if (codesEl) {
     codesEl.innerHTML = codes.length
@@ -763,32 +515,24 @@ async function loadVipPanel() {
       : '<p style="color:var(--text-muted);padding:20px;text-align:center">No VIP codes yet. Generate one!</p>';
   }
 
-  const membersRes = await apiCall('get_members', {}, true);
-  const vipMembers = membersRes.success
-    ? membersRes.members.filter(m => m.vip || m.role === 'vip')
-    : JSON.parse(localStorage.getItem('ccs-members') || '[]').filter(m => m.vip || m.role === 'vip');
-
-  const vipEl = document.getElementById('vipMembersList');
+  const members    = JSON.parse(localStorage.getItem('ccs-members') || '[]');
+  const vipMembers = members.filter(m => m.vip || m.role === 'vip');
+  const vipEl      = document.getElementById('vipMembersList');
   if (vipEl) {
     vipEl.innerHTML = vipMembers.length
       ? `<table class="adm-table"><thead><tr><th>Name</th><th>Email</th><th>Joined</th></tr></thead><tbody>
-          ${vipMembers.map(m => `<tr><td>${m.name}</td><td>${m.email || '—'}</td><td>${m.join_date ? new Date(m.join_date).toLocaleDateString() : '—'}</td></tr>`).join('')}
+          ${vipMembers.map(m => `<tr><td>${m.name}</td><td>${m.email || '—'}</td><td>${m.joinDate ? new Date(m.joinDate).toLocaleDateString() : '—'}</td></tr>`).join('')}
          </tbody></table>`
       : '<p style="color:var(--text-muted);padding:20px;text-align:center">No VIP members yet.</p>';
   }
-
   const countEl = document.getElementById('vipCount');
   if (countEl) countEl.textContent = vipMembers.length;
 }
 
-/* Load inquiries */
-async function loadInquiriesList() {
-  const container = document.getElementById('inquiriesList');
+function loadInquiriesList() {
+  const container  = document.getElementById('inquiriesList');
   if (!container) return;
-
-  /* ── BACKEND CALL ── */
-  const res = await apiCall('get_inquiries', {}, true);
-  const inquiries = res.success ? res.inquiries : JSON.parse(localStorage.getItem('ccs-inquiries') || '[]');
+  const inquiries = JSON.parse(localStorage.getItem('ccs-inquiries') || '[]');
 
   container.innerHTML = inquiries.length
     ? `<table class="adm-table">
@@ -810,39 +554,24 @@ async function loadInquiriesList() {
   if (countEl) countEl.textContent = inquiries.length;
 }
 
-/* Generate VIP code */
-window.generateVipCode = async function() {
-  /* ── BACKEND CALL ──
-   * POST /api/index.php { action: 'generate_vip_code' } */
-  const res = await apiCall('generate_vip_code', {}, true);
-  if (res.success) {
-    loadVipPanel();
-    showToast(`VIP Code: ${res.code}`, '⭐');
-  } else {
-    // Fallback: generate locally
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const code  = 'VIP' + Array.from({ length: 5 }, () => chars[Math.random() * chars.length | 0]).join('');
-    const codes = JSON.parse(localStorage.getItem('ccs-vip-codes') || '[]');
-    codes.push({ code, used: false, created: new Date().toISOString() });
-    localStorage.setItem('ccs-vip-codes', JSON.stringify(codes));
-    loadVipPanel();
-    showToast(`VIP Code: ${code}`, '⭐');
-  }
+window.generateVipCode = function () {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const code  = 'VIP' + Array.from({ length: 5 }, () => chars[Math.random() * chars.length | 0]).join('');
+  const codes = JSON.parse(localStorage.getItem('ccs-vip-codes') || '[]');
+  codes.push({ code, used: false, created: new Date().toISOString() });
+  localStorage.setItem('ccs-vip-codes', JSON.stringify(codes));
+  loadVipPanel();
+  showToast(`VIP Code generated: ${code}`, '⭐');
 };
 
-window.deleteVipCode = async function(code) {
-  /* ── BACKEND CALL ── */
-  const res = await apiCall('delete_vip_code', { code }, true);
-  if (res.success || res.error) { // even if backend fails, remove locally
-    const codes = JSON.parse(localStorage.getItem('ccs-vip-codes') || '[]').filter(c => c.code !== code);
-    localStorage.setItem('ccs-vip-codes', JSON.stringify(codes));
-    loadVipPanel();
-    showToast('Code deleted.', '🗑️');
-  }
+window.deleteVipCode = function (code) {
+  const codes = JSON.parse(localStorage.getItem('ccs-vip-codes') || '[]').filter(c => c.code !== code);
+  localStorage.setItem('ccs-vip-codes', JSON.stringify(codes));
+  loadVipPanel();
+  showToast('Code deleted.', '🗑️');
 };
 
-/* Save a post */
-window.savePost = async function() {
+window.savePost = function () {
   const title    = document.getElementById('pf-title')?.value.trim();
   const cat      = document.getElementById('pf-cat')?.value;
   const excerpt  = document.getElementById('pf-excerpt')?.value.trim();
@@ -855,120 +584,81 @@ window.savePost = async function() {
 
   if (!title || !cat) { showToast('Title and category required.', '⚠️'); return; }
 
-  /* ── BACKEND CALL ──
-   * POST /api/index.php { action: 'save_post', ...fields } */
-  const res = await apiCall('save_post', {
-    title, excerpt, content, category: cat,
-    cat_label: catLabels[cat] || cat,
-    tags, author, access, read_time: readTime
-  }, true);
-
-  if (res.success) {
-    // Also save to localStorage as fallback cache
-    const post = { id: Date.now(), title, excerpt, content, category: cat, catLabel: catLabels[cat] || cat,
-                   author, date: new Date().toISOString(), readTime, access, tags };
-    const posts = JSON.parse(localStorage.getItem('ccs-posts') || '[]');
-    posts.unshift(post);
-    localStorage.setItem('ccs-posts', JSON.stringify(posts));
-  }
+  const post = {
+    id: Date.now(), title, excerpt, content, category: cat,
+    cat_label: catLabels[cat] || cat, catLabel: catLabels[cat] || cat,
+    author, date: new Date().toISOString(), created: new Date().toISOString(),
+    readTime, read_time: readTime, access, tags,
+    locked: access !== 'public'
+  };
+  const posts = JSON.parse(localStorage.getItem('ccs-posts') || '[]');
+  posts.unshift(post);
+  localStorage.setItem('ccs-posts', JSON.stringify(posts));
 
   cancelPostForm();
   loadAdminData();
   showToast('Post published! 🚀', '✓');
 };
 
-/* Delete a post */
-window.deletePost = async function(id) {
+window.deletePost = function (id) {
   if (!confirm('Delete this post?')) return;
-  /* ── BACKEND CALL ── */
-  await apiCall('delete_post', { id }, true);
   const posts = JSON.parse(localStorage.getItem('ccs-posts') || '[]').filter(p => p.id !== id);
   localStorage.setItem('ccs-posts', JSON.stringify(posts));
   loadAdminData();
   showToast('Post deleted.', '🗑️');
 };
 
-/* Open/cancel post form */
-window.openNewPostForm = function() {
-  document.getElementById('newPostForm')?.classList.remove('hidden');
-  document.getElementById('postFormTitle').textContent = 'Create New Post';
-};
-window.cancelPostForm = function() {
-  document.getElementById('newPostForm')?.classList.add('hidden');
-};
+window.openNewPostForm  = function () { document.getElementById('newPostForm')?.classList.remove('hidden'); if (document.getElementById('postFormTitle')) document.getElementById('postFormTitle').textContent = 'Create New Post'; };
+window.cancelPostForm   = function () { document.getElementById('newPostForm')?.classList.add('hidden'); };
+window.openAddMemberForm= function () { document.getElementById('addMemberForm')?.classList.remove('hidden'); };
+window.cancelAddMember  = function () { document.getElementById('addMemberForm')?.classList.add('hidden'); };
 
-/* Open/cancel add member form */
-window.openAddMemberForm = function() { document.getElementById('addMemberForm')?.classList.remove('hidden'); };
-window.cancelAddMember   = function() { document.getElementById('addMemberForm')?.classList.add('hidden'); };
-
-/* Add member manually from admin panel */
-window.addMember = async function() {
+window.addMember = function () {
   const name  = document.getElementById('am-name')?.value.trim();
   const email = document.getElementById('am-email')?.value.trim();
   const role  = document.getElementById('am-role')?.value || 'member';
 
   if (!name || !email) { showToast('Name and email required.', '⚠️'); return; }
 
-  /* ── BACKEND CALL ── */
-  const res = await apiCall('add_member', { name, email, role }, true);
-  if (res.success) {
-    // Save to localStorage fallback too
-    const members = JSON.parse(localStorage.getItem('ccs-members') || '[]');
-    if (!members.find(m => m.email === email)) {
-      members.push({ name, email, role, vip: role === 'vip', joinDate: new Date().toISOString() });
-      localStorage.setItem('ccs-members', JSON.stringify(members));
-    }
-    cancelAddMember();
-    loadAdminData();
-    showToast(`${name} added! ${res.temp_password ? 'Temp pass: ' + res.temp_password : ''} 🎉`, '✓');
-  } else {
-    showToast(res.error || 'Failed to add member.', '❌');
-  }
+  const members = JSON.parse(localStorage.getItem('ccs-members') || '[]');
+  if (members.find(m => m.email === email)) { showToast('A member with this email already exists.', '⚠️'); return; }
+
+  members.push({ id: Date.now(), name, email, role, vip: role === 'vip', joinDate: new Date().toISOString() });
+  localStorage.setItem('ccs-members', JSON.stringify(members));
+  cancelAddMember();
+  loadAdminData();
+  showToast(`${name} added! 🎉`, '✓');
 };
 
-/* Save admin settings */
-window.saveSettings = async function() {
+window.saveSettings = function () {
   const displayName = document.getElementById('set-displayname')?.value || 'Kongo Bonface';
   const oldPass     = document.getElementById('set-oldpass')?.value;
   const newPass     = document.getElementById('set-newpass')?.value;
 
-  /* ── BACKEND CALL ── */
-  const res = await apiCall('save_settings', {
-    display_name: displayName,
-    old_password: oldPass,
-    new_password: newPass
-  }, true);
+  // Store display name
+  localStorage.setItem('ccs-admin-display', displayName);
 
-  if (res.success) {
-    showToast(res.message || 'Settings saved! ✓', '✓');
-    if (oldPass) {
-      document.getElementById('set-oldpass').value = '';
-      document.getElementById('set-newpass').value = '';
-    }
+  if (oldPass && newPass) {
+    // Store new password hash (simple — no network)
+    localStorage.setItem('ccs-admin-newpass', newPass);
+    if (document.getElementById('set-oldpass')) document.getElementById('set-oldpass').value = '';
+    if (document.getElementById('set-newpass')) document.getElementById('set-newpass').value = '';
+    showToast('Password updated! ✓', '✓');
   } else {
-    showToast(res.error || 'Failed to save settings.', '❌');
+    showToast('Settings saved! ✓', '✓');
   }
 };
 
 
 /* ============================================================
-   SECTION 8: COURSE ACCESS MANAGEMENT (Admin Panel)
-   ── Admin grants/revokes access to the HTML course ──
-   
-   Connection: 
-   loadCourseAccessPanel() → apiCall('get_course_access_list', {}, true)
-   grantAccess(email)      → apiCall('grant_course_access', { user_email }, true)
-   revokeAccess(email)     → apiCall('revoke_course_access', { user_email }, true)
+   SECTION 7: COURSE ACCESS MANAGEMENT (localStorage)
    ============================================================ */
 
-async function loadCourseAccessPanel() {
+function loadCourseAccessPanel() {
   const panel = document.getElementById('panel-courses');
   if (!panel) return;
 
-  /* ── BACKEND CALL ── */
-  const res = await apiCall('get_course_access_list', {}, true);
-  const list = res.success ? res.list : [];
-
+  const list   = JSON.parse(localStorage.getItem('ccs-course-access') || '[]');
   const listEl = document.getElementById('courseAccessList');
   if (listEl) {
     listEl.innerHTML = list.length
@@ -988,37 +678,43 @@ async function loadCourseAccessPanel() {
   }
 }
 
-window.grantCourseAccess = async function() {
+window.grantCourseAccess = function () {
   const emailEl = document.getElementById('course-grant-email');
   const email   = emailEl?.value.trim().toLowerCase();
   if (!email) { showToast('Enter a member email to grant access.', '⚠️'); return; }
 
-  /* ── BACKEND CALL ── */
-  const res = await apiCall('grant_course_access', { user_email: email }, true);
-  if (res.success) {
-    if (emailEl) emailEl.value = '';
-    loadCourseAccessPanel();
-    showToast(`Course access granted to ${email}! 🎓`, '✓');
-  } else {
-    showToast(res.error || 'Failed to grant access.', '❌');
-  }
+  const members = JSON.parse(localStorage.getItem('ccs-members') || '[]');
+  const member  = members.find(m => m.email === email);
+
+  const list = JSON.parse(localStorage.getItem('ccs-course-access') || '[]');
+  if (list.find(i => i.user_email === email)) { showToast('Access already granted.', '⚠️'); return; }
+
+  list.push({ user_email: email, name: member?.name || '—', granted_at: new Date().toISOString() });
+  localStorage.setItem('ccs-course-access', JSON.stringify(list));
+
+  // Grant flag on user if they exist
+  const uIdx = members.findIndex(m => m.email === email);
+  if (uIdx > -1) { members[uIdx].course_access = true; localStorage.setItem('ccs-members', JSON.stringify(members)); }
+
+  if (emailEl) emailEl.value = '';
+  loadCourseAccessPanel();
+  showToast(`Course access granted to ${email}! 🎓`, '✓');
 };
 
-window.revokeCourseAccess = async function(email) {
+window.revokeCourseAccess = function (email) {
   if (!confirm(`Revoke course access for ${email}?`)) return;
-  /* ── BACKEND CALL ── */
-  await apiCall('revoke_course_access', { user_email: email }, true);
+  const list = JSON.parse(localStorage.getItem('ccs-course-access') || '[]').filter(i => i.user_email !== email);
+  localStorage.setItem('ccs-course-access', JSON.stringify(list));
   loadCourseAccessPanel();
   showToast('Access revoked.', '🗑️');
 };
 
 
 /* ============================================================
-   SECTION 9: ADMIN LOGIN / LOGOUT
-   ── Admin credentials sent to PHP, token stored ──
+   SECTION 8: ADMIN LOGIN / LOGOUT
    ============================================================ */
 
-window.adminLogin = async function() {
+window.adminLogin = function () {
   const email = document.getElementById('adm-email')?.value.trim();
   const pass  = document.getElementById('adm-pass')?.value;
   const errEl = document.getElementById('adm-error');
@@ -1026,10 +722,7 @@ window.adminLogin = async function() {
 
   if (btn) { btn.textContent = 'Authenticating…'; btn.disabled = true; }
 
-  /* ── BACKEND CALL ──
-   * POST /api/index.php { action: 'admin_login', email, password }
-   * Returns: { success, token } */
-  const result = await Auth.loginAdmin(email, pass);
+  const result = Auth.loginAdmin(email, pass);
 
   if (btn) { btn.textContent = 'Enter Dashboard →'; btn.disabled = false; }
 
@@ -1044,19 +737,18 @@ window.adminLogin = async function() {
   }
 };
 
-window.adminLogout = async function() {
-  await Auth.logoutAdmin();
+window.adminLogout = function () {
+  Auth.logoutAdmin();
   document.getElementById('adminDashboard')?.classList.add('hidden');
   document.getElementById('adminLoginScreen')?.classList.remove('hidden');
 };
 
 
 /* ============================================================
-   SECTION 10: ADMIN SETTINGS (Theme, Avatar)
-   These are local-only (no backend needed for these UX features)
+   SECTION 9: ADMIN SETTINGS (theme, avatar — local only)
    ============================================================ */
 
-window.setAdminTheme = function(color, btn) {
+window.setAdminTheme = function (color, btn) {
   document.documentElement.style.setProperty('--red', color);
   document.querySelectorAll('.admin-theme-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -1073,20 +765,17 @@ function initAdminSettings() {
       b.classList.toggle('active', b.dataset.color === savedColor);
     });
   }
-
   if (savedAvatar) applyAdminAvatar(savedAvatar);
 
-  // Live clock in admin topbar
   function updateAdmTime() {
-    const now = new Date();
-    const el  = document.getElementById('admTime');
-    if (el) el.textContent = now.toLocaleTimeString();
+    const el = document.getElementById('admTime');
+    if (el) el.textContent = new Date().toLocaleTimeString();
   }
   setInterval(updateAdmTime, 1000);
   updateAdmTime();
 }
 
-window.handleAdminAvatar = function(event) {
+window.handleAdminAvatar = function (event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -1110,7 +799,7 @@ function applyAdminAvatar(dataUrl) {
 
 
 /* ============================================================
-   SECTION 11: GENERAL UI — Modal, Toast, Cursor, Nav
+   SECTION 10: GENERAL UI — Modal, Toast, Cursor, Nav
    ============================================================ */
 
 function openModal(id) {
@@ -1153,11 +842,11 @@ function showToast(message, icon = '✓') {
 window.showToast = showToast;
 
 // Custom cursor
-(function() {
+(function () {
   const cursor = document.querySelector('.cursor');
   const ring   = document.querySelector('.cursor-ring');
   if (!cursor || !ring) return;
-  let mx=0, my=0, rx=0, ry=0;
+  let mx = 0, my = 0, rx = 0, ry = 0;
   window.addEventListener('mousemove', e => {
     mx = e.clientX; my = e.clientY;
     cursor.style.left = mx + 'px';
@@ -1179,14 +868,14 @@ window.showToast = showToast;
 })();
 
 // Nav scroll behaviour
-(function() {
+(function () {
   const nav = document.querySelector('.nav, .site-header');
   if (!nav) return;
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60), { passive: true });
 })();
 
 // Hamburger / mobile nav
-(function() {
+(function () {
   const ham    = document.querySelector('.hamburger');
   const drawer = document.querySelector('.nav-drawer');
   if (ham && drawer) {
@@ -1215,11 +904,10 @@ window.closeSidebar  = () => document.querySelector('.sidebar')?.classList.remov
 
 
 /* ============================================================
-   SECTION 12: ANIMATIONS — Scroll Reveal, Skill Bars, Counter
+   SECTION 11: ANIMATIONS — Scroll Reveal, Skill Bars, Counter
    ============================================================ */
 
-// Scroll reveal
-(function() {
+(function () {
   const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-up, .reveal-card');
   if (!els.length) return;
   const io = new IntersectionObserver(entries => {
@@ -1230,8 +918,7 @@ window.closeSidebar  = () => document.querySelector('.sidebar')?.classList.remov
   els.forEach(el => io.observe(el));
 })();
 
-// Skill bars
-(function() {
+(function () {
   const bars = document.querySelectorAll('.skill-bar-fill');
   if (!bars.length) return;
   const io = new IntersectionObserver(entries => {
@@ -1240,8 +927,7 @@ window.closeSidebar  = () => document.querySelector('.sidebar')?.classList.remov
   bars.forEach(b => io.observe(b));
 })();
 
-// Counters
-(function() {
+(function () {
   const nums = document.querySelectorAll('[data-count]');
   if (!nums.length) return;
   const io = new IntersectionObserver(entries => {
@@ -1263,19 +949,18 @@ window.closeSidebar  = () => document.querySelector('.sidebar')?.classList.remov
   nums.forEach(n => io.observe(n));
 })();
 
-// Typing effect
 function initTyping(elementId, texts) {
   const el = document.getElementById(elementId);
   if (!el) return;
   const maxLen = Math.max(...texts.map(t => t.length));
-  el.style.minWidth  = (maxLen * 9.6) + 'px';
-  el.style.display   = 'inline-block';
+  el.style.minWidth = (maxLen * 9.6) + 'px';
+  el.style.display  = 'inline-block';
   let idx = 0, charIdx = 0, isDeleting = false;
   function type() {
     const cur = texts[idx];
     el.textContent = cur.substring(0, charIdx);
     let speed = isDeleting ? 55 : 85;
-    if (!isDeleting && charIdx === cur.length)    { speed = 2000; isDeleting = true; }
+    if (!isDeleting && charIdx === cur.length)  { speed = 2000; isDeleting = true; }
     else if (isDeleting && charIdx === 0) { isDeleting = false; idx = (idx + 1) % texts.length; speed = 400; }
     charIdx += isDeleting ? -1 : 1;
     setTimeout(type, speed);
@@ -1283,7 +968,6 @@ function initTyping(elementId, texts) {
   type();
 }
 
-// Card tilt
 function initTilt() {
   document.querySelectorAll('.service-card, .testi-card').forEach(card => {
     card.addEventListener('mousemove', e => {
@@ -1302,9 +986,10 @@ function initTilt() {
 
 
 /* ============================================================
-   SECTION 13: MODAL HELPERS (auth modal aliases)
+   SECTION 12: MODAL HELPERS
    ============================================================ */
-window.openAuthModal = function(tab) {
+
+window.openAuthModal = function (tab) {
   openModal('loginModal');
   if (tab === 'signup') {
     document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
@@ -1313,24 +998,342 @@ window.openAuthModal = function(tab) {
     if (regTab) { regTab.classList.add('active'); document.getElementById('tab-register')?.classList.add('active'); }
   }
 };
-window.closeAuthModal = function() { closeModal('loginModal'); };
+window.closeAuthModal = function () { closeModal('loginModal'); };
+
+window.openLockModal = function () {
+  const el = document.getElementById('lockModal');
+  if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; }
+};
+window.closeLockModal = function () {
+  const el = document.getElementById('lockModal');
+  if (el) { el.classList.remove('open'); document.body.style.overflow = ''; }
+};
+window.handleAuthOverlay = function (e) {
+  if (e.target === document.getElementById('loginModal')) closeModal('loginModal');
+};
+window.handleLockOverlay = function (e) {
+  if (e.target === document.getElementById('lockModal')) closeLockModal();
+};
 
 
 /* ============================================================
-   SECTION 14: DOMContentLoaded — INIT
+   SECTION 13: BLOG PAGE FUNCTIONS
+   ============================================================ */
+
+window.switchTab = function (tab) {
+  const loginTab  = document.getElementById('loginTab');
+  const signupTab = document.getElementById('signupTab');
+  if (!loginTab || !signupTab) return;
+  if (tab === 'login') {
+    loginTab.classList.remove('hidden');
+    signupTab.classList.add('hidden');
+  } else {
+    loginTab.classList.add('hidden');
+    signupTab.classList.remove('hidden');
+  }
+  document.querySelectorAll('.auth-tab').forEach(t => {
+    t.classList.toggle('active', t.getAttribute('onclick')?.includes(`'${tab}'`));
+  });
+};
+
+window.loginUser = function () {
+  const email = document.getElementById('l-email')?.value?.trim();
+  const pass  = document.getElementById('l-pass')?.value;
+  const btn   = document.querySelector('#loginTab .btn-primary');
+  if (!email || !pass) { showToast('Please fill in email and password.', '⚠️'); return; }
+  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
+  const result = Auth.login(email, pass);
+  if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
+  if (result === true) {
+    closeModal('loginModal');
+    updateAuthUI();
+    showToast('Welcome back! 👋', '✓');
+  } else {
+    showToast(typeof result === 'string' ? result : 'Invalid email or password.', '❌');
+  }
+};
+
+window.signupUser = function () {
+  const name  = document.getElementById('s-name')?.value?.trim();
+  const email = document.getElementById('s-email')?.value?.trim();
+  const pass  = document.getElementById('s-pass')?.value;
+  const btn   = document.querySelector('#signupTab .btn-primary');
+  if (!name || !email || !pass) { showToast('Please fill all fields.', '⚠️'); return; }
+  if (btn) { btn.textContent = 'Creating…'; btn.disabled = true; }
+  const result = Auth.register(email, pass, name);
+  if (btn) { btn.disabled = false; btn.textContent = 'Create Account →'; }
+  if (result === true) {
+    closeModal('loginModal');
+    updateAuthUI();
+    showToast(`Welcome to CCS, ${name}! 🎉`, '🚀');
+  } else if (result === 'exists') {
+    showToast('An account with this email already exists.', '⚠️');
+  } else {
+    showToast('Registration failed. Try again.', '❌');
+  }
+};
+
+window.loginVip = function () {
+  const code = document.getElementById('l-vip')?.value?.trim().toUpperCase();
+  if (!code) { showToast('Please enter a VIP code.', '⚠️'); return; }
+  if (!Auth.isLoggedIn) {
+    const u = { id: Date.now(), name: 'VIP Member', email: '', vip: true, role: 'vip' };
+    localStorage.setItem(Auth.key, JSON.stringify(u));
+  }
+  const result = Auth.applyVipCode(code);
+  if (result) {
+    closeModal('loginModal');
+    updateAuthUI();
+    showToast('VIP access activated! ⭐', '⭐');
+  } else {
+    showToast('Invalid VIP code. Please try again.', '❌');
+  }
+};
+
+
+/* ============================================================
+   SECTION 14: NEWSLETTER (localStorage)
+   ============================================================ */
+
+window.subscribeNewsletter = function () {
+  const input = document.getElementById('blogNlEmail');
+  const email = input?.value?.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showToast('Please enter a valid email address.', '⚠️');
+    return;
+  }
+  const subs = JSON.parse(localStorage.getItem('ccs-newsletter') || '[]');
+  if (subs.includes(email)) { showToast('You\'re already subscribed! 📬', '⚠️'); return; }
+  subs.push(email);
+  localStorage.setItem('ccs-newsletter', JSON.stringify(subs));
+  if (input) input.value = '';
+  showToast('You\'re subscribed! 📬 Welcome aboard.', '📬');
+};
+
+
+/* ============================================================
+   SECTION 15: VIP DASHBOARD
+   ============================================================ */
+
+window.openVipDashboard = function () {
+  const dash = document.getElementById('vipDashboard');
+  if (!dash) return;
+  dash.style.display = 'flex';
+  dash.style.flexDirection = 'column';
+  document.body.style.overflow = 'hidden';
+
+  const user = Auth.user;
+  if (user) {
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    const setInput = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    setVal('vipUserName', user.name || 'Member');
+    setVal('vipProfileName', user.name || 'VIP Member');
+    setVal('vipProfileEmail', user.email || '');
+    setInput('vip-pf-name', user.name);
+    setInput('vip-pf-email', user.email);
+    setInput('vip-pf-location', user.location);
+    setInput('vip-pf-bio', user.bio);
+    setInput('vip-pf-website', user.website);
+
+    const initial = document.getElementById('vipAvatarInitial');
+    if (initial && user.name) initial.textContent = user.name.charAt(0).toUpperCase();
+    const savedAvatar = localStorage.getItem('ccs-vip-avatar');
+    if (savedAvatar) {
+      const img = document.getElementById('vipAvatarImg');
+      if (img) { img.src = savedAvatar; img.style.display = ''; }
+      if (initial) initial.style.display = 'none';
+    }
+  }
+
+  const posts    = getStoredPosts();
+  const vipPosts = posts.slice(0, 6);
+  const postCount = document.getElementById('vipPostCount');
+  if (postCount) postCount.textContent = posts.length;
+  const cardHTML = vipPosts.map(p => `
+    <div class="vip-post-card" onclick="openPost(${p.id})">
+      <div class="vip-post-cat">${p.cat_label || p.catLabel || p.category || 'Article'}</div>
+      <h4>${p.title}</h4>
+      <p>${p.excerpt || ''}</p>
+      <div class="vip-post-meta"><span>${p.author || 'CCS Team'}</span><span>${p.read_time || p.readTime || '5 min'}</span></div>
+    </div>`).join('') || '<p style="color:var(--text-muted)">No posts available yet.</p>';
+  const overviewEl = document.getElementById('vipOverviewPosts');
+  const allEl      = document.getElementById('vipAllPosts');
+  if (overviewEl) overviewEl.innerHTML = cardHTML;
+  if (allEl)      allEl.innerHTML      = cardHTML;
+};
+
+window.closeVipDashboard = function () {
+  const dash = document.getElementById('vipDashboard');
+  if (dash) dash.style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+window.showVipPanel = function (name) {
+  document.querySelectorAll('.vip-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.vip-nav-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById(`vip-panel-${name}`);
+  if (panel) panel.classList.add('active');
+  const btn = document.querySelector(`.vip-nav-btn[onclick*="'${name}'"]`);
+  if (btn) btn.classList.add('active');
+};
+
+window.saveVipProfile = function () {
+  const user = Auth.user || {};
+  user.name     = document.getElementById('vip-pf-name')?.value.trim()     || user.name;
+  user.email    = document.getElementById('vip-pf-email')?.value.trim()    || user.email;
+  user.location = document.getElementById('vip-pf-location')?.value.trim() || '';
+  user.bio      = document.getElementById('vip-pf-bio')?.value.trim()      || '';
+  user.website  = document.getElementById('vip-pf-website')?.value.trim()  || '';
+  localStorage.setItem(Auth.key, JSON.stringify(user));
+  const profName = document.getElementById('vipProfileName');
+  if (profName) profName.textContent = user.name;
+  const vipName = document.getElementById('vipUserName');
+  if (vipName) vipName.textContent = user.name;
+  showToast('Profile saved! ✓', '✓');
+};
+
+window.handleVipAvatar = function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    localStorage.setItem('ccs-vip-avatar', e.target.result);
+    const img     = document.getElementById('vipAvatarImg');
+    const initial = document.getElementById('vipAvatarInitial');
+    if (img)     { img.src = e.target.result; img.style.display = ''; }
+    if (initial) initial.style.display = 'none';
+    showToast('Avatar updated! 📷', '✓');
+  };
+  reader.readAsDataURL(file);
+};
+
+
+/* ============================================================
+   SECTION 16: BLOG LIVE SEARCH
+   ============================================================ */
+(function () {
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchEl = document.getElementById('blogSearch');
+    if (!searchEl) return;
+    searchEl.addEventListener('input', function () {
+      const q    = this.value.toLowerCase().trim();
+      const grid = document.getElementById('postsGrid');
+      if (!grid) return;
+      if (!q) { renderPosts(window._currentBlogCat || 'all'); return; }
+
+      const catColors = { tutorial: '#e63946', showcase: '#3b82f6', news: '#10b981', beforeafter: '#8b5cf6' };
+      const filtered  = getStoredPosts().filter(p =>
+        (p.title    || '').toLowerCase().includes(q) ||
+        (p.excerpt  || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q) ||
+        (p.author   || '').toLowerCase().includes(q)
+      );
+
+      if (!filtered.length) {
+        grid.innerHTML = `<p style="color:var(--text-muted);padding:40px;text-align:center;grid-column:1/-1">No posts found for "<strong>${q}</strong>"</p>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(post => {
+        const locked = post.locked && !Auth.isLoggedIn;
+        return `
+          <article class="post-card ${locked ? 'locked' : ''}" onclick="openPost(${post.id})" style="cursor:pointer">
+            <div class="post-cat-tag" style="background:${catColors[post.category] || '#e63946'}22;color:${catColors[post.category] || '#e63946'};border:1px solid ${catColors[post.category] || '#e63946'}44">${post.cat_label || post.catLabel || post.category}</div>
+            <h3 class="post-title">${post.title}</h3>
+            <p class="post-excerpt">${post.excerpt}</p>
+            <div class="post-meta"><span>${post.author || 'CCS Team'}</span><span>${post.read_time || post.readTime || '5 min read'}</span></div>
+            ${locked ? '<div class="post-lock">🔐 Members Only — <button onclick="event.stopPropagation();openModal(\'loginModal\')" class="btn-inline">Join Free</button></div>' : ''}
+          </article>`;
+      }).join('');
+    });
+  });
+})();
+
+
+/* ============================================================
+   SECTION 17: UX ENHANCEMENTS
+   Progress bar, scroll-to-top, ripple, page transitions
+   ============================================================ */
+(function () {
+  // Progress bar
+  const bar = document.createElement('div');
+  bar.id = 'progress-bar';
+  document.body.prepend(bar);
+  window.addEventListener('scroll', () => {
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0) + '%';
+  }, { passive: true });
+
+  // Scroll to top
+  const topBtn = document.createElement('button');
+  topBtn.id = 'scroll-top';
+  topBtn.setAttribute('aria-label', 'Scroll to top');
+  topBtn.innerHTML = '↑';
+  topBtn.setAttribute('data-tooltip', 'Back to top');
+  document.body.appendChild(topBtn);
+  window.addEventListener('scroll', () => topBtn.classList.toggle('visible', window.scrollY > 400), { passive: true });
+  topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // Page transition overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'page-transition';
+  document.body.prepend(overlay);
+  window.addEventListener('load', () => { overlay.style.opacity = '0'; });
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || a.target === '_blank') return;
+    e.preventDefault();
+    overlay.style.opacity = '1';
+    overlay.style.pointerEvents = 'all';
+    setTimeout(() => { window.location.href = href; }, 320);
+  });
+
+  // Ripple effect
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.btn, .btn-nav, .btn-primary, .btn-outline, .btn-ghost, .btn-vip-dash');
+    if (!btn) return;
+    const rect   = btn.getBoundingClientRect();
+    const size   = Math.max(rect.width, rect.height) * 2;
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple-wave';
+    ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px`;
+    btn.appendChild(ripple);
+    ripple.addEventListener('animationend', () => ripple.remove());
+  });
+
+  // Staggered reveal cards
+  const revealCards = document.querySelectorAll('.reveal-card');
+  if (revealCards.length) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) { setTimeout(() => e.target.classList.add('revealed'), i * 80); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    revealCards.forEach(el => io.observe(el));
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      const searchEl = document.querySelector('#blogSearch, .search-input, input[type="search"]');
+      if (searchEl) { e.preventDefault(); searchEl.focus(); }
+    }
+  });
+})();
+
+
+/* ============================================================
+   SECTION 18: DOMContentLoaded — INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Update nav auth buttons based on stored session
   updateAuthUI();
-
-  // Wire up all forms to the backend
   setupForms();
-
-  // Card hover tilt effect
   initTilt();
 
-  // Highlight current page in nav
+  // Highlight active nav link
   const page = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a, .nav-drawer a, .header-nav .nav-link, .sidebar-nav a').forEach(a => {
     const href = a.getAttribute('href') || '';
@@ -1338,13 +1341,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Typing effects
-  initTyping('typingHero',  ['Web Development Agency','Frontend Specialists','E-Commerce Experts','Design & Redesign','AI-Powered Builds','Teaching HTML & CSS']);
-  initTyping('typingAbout', ['Edgar Karori, Founder','Frontend Developer','Designer & Dreamer','Proud Kenyan 🇰🇪']);
+  initTyping('typingHero',  ['Web Development Agency', 'Frontend Specialists', 'E-Commerce Experts', 'Design & Redesign', 'AI-Powered Builds', 'Teaching HTML & CSS']);
+  initTyping('typingAbout', ['Edgar Karori, Founder', 'Frontend Developer', 'Designer & Dreamer', 'Proud Kenyan 🇰🇪']);
 
   // Logout buttons
   document.querySelectorAll('.logout-btn, #userBtnWrap .btn-logout').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      await Auth.logout();
+    btn.addEventListener('click', () => {
+      Auth.logout();
       updateAuthUI();
       showToast('Logged out. See you! 👋', '👋');
     });
@@ -1359,7 +1362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Render blog on blog page
+  // Render blog posts
   if (document.getElementById('postsGrid')) renderPosts();
 
   // Admin dashboard init
@@ -1372,397 +1375,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initAdminSettings();
   }
 
-  // Clock in cursor ring
+  // Clock in cursor ring (also declared inline in index.html — this is a safe fallback)
   function updateClock() {
-    const now = new Date();
-    const el  = document.getElementById('clock');
-    if (el) el.textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+    const el = document.getElementById('clock');
+    if (el) el.textContent = `${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}:${String(new Date().getSeconds()).padStart(2,'0')}`;
   }
   setInterval(updateClock, 1000);
   updateClock();
 });
-/* ============================================================
-   SECTION 15: HIGH-CLASS UX ENHANCEMENTS — v3.0
-   Progress bar, scroll-to-top, ripple, page transitions
-   ============================================================ */
-
-(function() {
-  // ── Progress bar ──
-  const bar = document.createElement('div');
-  bar.id = 'progress-bar';
-  document.body.prepend(bar);
-
-  function updateProgress() {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    bar.style.width = pct + '%';
-  }
-  window.addEventListener('scroll', updateProgress, { passive: true });
-
-  // ── Scroll to top button ──
-  const topBtn = document.createElement('button');
-  topBtn.id = 'scroll-top';
-  topBtn.setAttribute('aria-label', 'Scroll to top');
-  topBtn.innerHTML = '↑';
-  topBtn.setAttribute('data-tooltip', 'Back to top');
-  document.body.appendChild(topBtn);
-
-  window.addEventListener('scroll', () => {
-    topBtn.classList.toggle('visible', window.scrollY > 400);
-  }, { passive: true });
-
-  topBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
-  // ── Page transition overlay ──
-  const overlay = document.createElement('div');
-  overlay.id = 'page-transition';
-  document.body.prepend(overlay);
-
-  // Fade in on load
-  window.addEventListener('load', () => {
-    overlay.style.opacity = '0';
-  });
-
-  // Intercept internal link clicks for smooth exit
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a[href]');
-    if (!a) return;
-    const href = a.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || a.target === '_blank') return;
-    e.preventDefault();
-    overlay.style.opacity = '1';
-    overlay.style.pointerEvents = 'all';
-    setTimeout(() => { window.location.href = href; }, 320);
-  });
-
-  // ── Ripple effect on buttons ──
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.btn, .btn-nav, .btn-primary, .btn-outline, .btn-ghost, .btn-vip-dash');
-    if (!btn) return;
-    const rect = btn.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height) * 2;
-    const x = e.clientX - rect.left - size / 2;
-    const y = e.clientY - rect.top  - size / 2;
-    const ripple = document.createElement('span');
-    ripple.className = 'ripple-wave';
-    ripple.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
-    btn.appendChild(ripple);
-    ripple.addEventListener('animationend', () => ripple.remove());
-  });
-
-  // ── Staggered reveal for cards ──
-  const revealCards = document.querySelectorAll('.reveal-card');
-  if (revealCards.length) {
-    const io = new IntersectionObserver(entries => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('revealed'), i * 80);
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    revealCards.forEach(el => io.observe(el));
-  }
-
-  // ── Keyboard shortcut: press / to focus search (if exists) ──
-  document.addEventListener('keydown', e => {
-    if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
-      const searchEl = document.querySelector('#blogSearch, .search-input, input[type="search"]');
-      if (searchEl) { e.preventDefault(); searchEl.focus(); }
-    }
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-overlay.open').forEach(m => {
-        const id = m.id;
-        if (id) { try { closeModal(id); } catch(err) {} }
-        else { m.classList.remove('open'); }
-      });
-    }
-  });
-})();
-
-/* ============================================================
-   SECTION 16: BLOG PAGE — MISSING FUNCTIONS
-   blog.html calls these; they were not previously defined.
-   ============================================================ */
-
-/* ── Auth modal tab switcher (blog.html uses switchTab) ── */
-window.switchTab = function(tab) {
-  const loginTab  = document.getElementById('loginTab');
-  const signupTab = document.getElementById('signupTab');
-  if (!loginTab || !signupTab) return;
-
-  if (tab === 'login') {
-    loginTab.classList.remove('hidden');
-    signupTab.classList.add('hidden');
-  } else {
-    loginTab.classList.add('hidden');
-    signupTab.classList.remove('hidden');
-  }
-
-  document.querySelectorAll('.auth-tab').forEach(t => {
-    t.classList.toggle('active', t.getAttribute('onclick')?.includes(`'${tab}'`));
-  });
-};
-
-/* ── Inline Login (blog.html modal) ── */
-window.loginUser = async function() {
-  const email = document.getElementById('l-email')?.value?.trim();
-  const pass  = document.getElementById('l-pass')?.value;
-  const btn   = document.querySelector('#loginTab .btn-primary');
-
-  if (!email || !pass) { showToast('Please fill in email and password.', '⚠️'); return; }
-
-  if (btn) { btn.textContent = 'Signing in…'; btn.disabled = true; }
-  const result = await Auth.login(email, pass);
-  if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
-
-  if (result === true) {
-    closeModal('loginModal');
-    updateAuthUI();
-    showToast('Welcome back! 👋', '✓');
-  } else {
-    showToast(typeof result === 'string' ? result : 'Invalid email or password.', '❌');
-  }
-};
-
-/* ── Inline Sign Up (blog.html modal) ── */
-window.signupUser = async function() {
-  const name  = document.getElementById('s-name')?.value?.trim();
-  const email = document.getElementById('s-email')?.value?.trim();
-  const pass  = document.getElementById('s-pass')?.value;
-  const btn   = document.querySelector('#signupTab .btn-primary');
-
-  if (!name || !email || !pass) { showToast('Please fill all fields.', '⚠️'); return; }
-
-  if (btn) { btn.textContent = 'Creating…'; btn.disabled = true; }
-  const result = await Auth.register(email, pass, name);
-  if (btn) { btn.disabled = false; btn.textContent = 'Create Account →'; }
-
-  if (result === true) {
-    closeModal('loginModal');
-    updateAuthUI();
-    showToast(`Welcome to CCS, ${name}! 🎉`, '🚀');
-  } else if (result === 'exists') {
-    showToast('An account with this email already exists.', '⚠️');
-  } else {
-    showToast(typeof result === 'string' ? result : 'Registration failed. Try again.', '❌');
-  }
-};
-
-/* ── VIP Login (blog.html modal) ── */
-window.loginVip = async function() {
-  const code = document.getElementById('l-vip')?.value?.trim().toUpperCase();
-  if (!code) { showToast('Please enter a VIP code.', '⚠️'); return; }
-
-  // Ensure user has an account first (create guest if needed)
-  if (!Auth.isLoggedIn) {
-    const u = { id: Date.now(), name: 'VIP Member', email: '', vip: true, role: 'vip' };
-    localStorage.setItem(Auth.key, JSON.stringify(u));
-  }
-
-  const result = await Auth.applyVipCode(code);
-  if (result) {
-    closeModal('loginModal');
-    updateAuthUI();
-    showToast('VIP access activated! ⭐', '⭐');
-  } else {
-    showToast('Invalid VIP code. Please try again.', '❌');
-  }
-};
-
-/* ── Handle auth modal overlay click ── */
-window.handleAuthOverlay = function(e) {
-  if (e.target === document.getElementById('loginModal')) closeModal('loginModal');
-};
-
-/* ── Article lock modal ── */
-window.openLockModal = function() {
-  const el = document.getElementById('lockModal');
-  if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; }
-};
-window.closeLockModal = function() {
-  const el = document.getElementById('lockModal');
-  if (el) { el.classList.remove('open'); document.body.style.overflow = ''; }
-};
-window.handleLockOverlay = function(e) {
-  if (e.target === document.getElementById('lockModal')) closeLockModal();
-};
-
-/* ── Newsletter subscription ── */
-window.subscribeNewsletter = async function() {
-  const input = document.getElementById('blogNlEmail');
-  const email = input?.value?.trim();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showToast('Please enter a valid email address.', '⚠️');
-    return;
-  }
-
-  const btn = document.querySelector('.nl-form button');
-  if (btn) { btn.textContent = 'Subscribing…'; btn.disabled = true; }
-
-  const res = await apiCall('subscribe_newsletter', { email });
-
-  if (btn) { btn.disabled = false; btn.textContent = 'Subscribe →'; }
-
-  if (res.success || res.error?.includes('Network')) {
-    // Save locally as fallback
-    const subs = JSON.parse(localStorage.getItem('ccs-newsletter') || '[]');
-    if (!subs.includes(email)) { subs.push(email); localStorage.setItem('ccs-newsletter', JSON.stringify(subs)); }
-    if (input) input.value = '';
-    showToast('You\'re subscribed! 📬 Welcome aboard.', '📬');
-  } else {
-    showToast(res.error || 'Subscription failed. Please try again.', '❌');
-  }
-};
-
-/* ── VIP Dashboard ── */
-window.openVipDashboard = function() {
-  const dash = document.getElementById('vipDashboard');
-  if (!dash) return;
-  dash.style.display = 'flex';
-  dash.style.flexDirection = 'column';
-  document.body.style.overflow = 'hidden';
-
-  // Populate VIP user info
-  const user = Auth.user;
-  if (user) {
-    const nameEl = document.getElementById('vipUserName');
-    if (nameEl) nameEl.textContent = user.name || 'Member';
-    const profName = document.getElementById('vipProfileName');
-    if (profName) profName.textContent = user.name || 'VIP Member';
-    const profEmail = document.getElementById('vipProfileEmail');
-    if (profEmail) profEmail.textContent = user.email || '';
-    const pfName = document.getElementById('vip-pf-name');
-    if (pfName) pfName.value = user.name || '';
-    const pfEmail = document.getElementById('vip-pf-email');
-    if (pfEmail) pfEmail.value = user.email || '';
-    const pfLoc = document.getElementById('vip-pf-location');
-    if (pfLoc) pfLoc.value = user.location || '';
-    const pfBio = document.getElementById('vip-pf-bio');
-    if (pfBio) pfBio.value = user.bio || '';
-    const pfWeb = document.getElementById('vip-pf-website');
-    if (pfWeb) pfWeb.value = user.website || '';
-
-    // Avatar initial
-    const initial = document.getElementById('vipAvatarInitial');
-    if (initial && user.name) initial.textContent = user.name.charAt(0).toUpperCase();
-    const savedAvatar = localStorage.getItem('ccs-vip-avatar');
-    if (savedAvatar) {
-      const img = document.getElementById('vipAvatarImg');
-      if (img) { img.src = savedAvatar; img.style.display = ''; }
-      if (initial) initial.style.display = 'none';
-    }
-  }
-
-  // Load VIP posts into overview and content panels
-  (async () => {
-    const posts = await getStoredPosts();
-    const vipPosts = posts.slice(0, 6);
-    const postCount = document.getElementById('vipPostCount');
-    if (postCount) postCount.textContent = posts.length;
-    const catColors = { tutorial:'#e63946', showcase:'#3b82f6', news:'#10b981', beforeafter:'#8b5cf6' };
-    const cardHTML = vipPosts.map(p => `
-      <div class="vip-post-card" onclick="openPost(${p.id})">
-        <div class="vip-post-cat">${p.cat_label || p.catLabel || p.category || 'Article'}</div>
-        <h4>${p.title}</h4>
-        <p>${p.excerpt || ''}</p>
-        <div class="vip-post-meta"><span>${p.author || 'CCS Team'}</span><span>${p.read_time || p.readTime || '5 min'}</span></div>
-      </div>`).join('') || '<p style="color:var(--text-muted)">No posts available yet.</p>';
-    const overviewEl = document.getElementById('vipOverviewPosts');
-    const allEl      = document.getElementById('vipAllPosts');
-    if (overviewEl) overviewEl.innerHTML = cardHTML;
-    if (allEl) allEl.innerHTML = cardHTML;
-  })();
-};
-
-window.closeVipDashboard = function() {
-  const dash = document.getElementById('vipDashboard');
-  if (dash) { dash.style.display = 'none'; }
-  document.body.style.overflow = '';
-};
-
-window.showVipPanel = function(name) {
-  document.querySelectorAll('.vip-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.vip-nav-btn').forEach(b => b.classList.remove('active'));
-  const panel = document.getElementById(`vip-panel-${name}`);
-  if (panel) panel.classList.add('active');
-  const btn = document.querySelector(`.vip-nav-btn[onclick*="'${name}'"]`);
-  if (btn) btn.classList.add('active');
-};
-
-/* ── Save VIP Profile ── */
-window.saveVipProfile = function() {
-  const user = Auth.user || {};
-  user.name     = document.getElementById('vip-pf-name')?.value.trim()    || user.name;
-  user.email    = document.getElementById('vip-pf-email')?.value.trim()   || user.email;
-  user.location = document.getElementById('vip-pf-location')?.value.trim() || '';
-  user.bio      = document.getElementById('vip-pf-bio')?.value.trim()     || '';
-  user.website  = document.getElementById('vip-pf-website')?.value.trim() || '';
-  localStorage.setItem(Auth.key, JSON.stringify(user));
-
-  const profName = document.getElementById('vipProfileName');
-  if (profName) profName.textContent = user.name;
-  const vipName = document.getElementById('vipUserName');
-  if (vipName) vipName.textContent = user.name;
-
-  showToast('Profile saved! ✓', '✓');
-};
-
-/* ── VIP Avatar Upload ── */
-window.handleVipAvatar = function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    localStorage.setItem('ccs-vip-avatar', e.target.result);
-    const img = document.getElementById('vipAvatarImg');
-    const initial = document.getElementById('vipAvatarInitial');
-    if (img) { img.src = e.target.result; img.style.display = ''; }
-    if (initial) initial.style.display = 'none';
-    showToast('Avatar updated! 📷', '✓');
-  };
-  reader.readAsDataURL(file);
-};
-
-/* ── Blog live search filter ── */
-(function() {
-  document.addEventListener('DOMContentLoaded', () => {
-    const searchEl = document.getElementById('blogSearch');
-    if (!searchEl) return;
-    searchEl.addEventListener('input', async function() {
-      const q = this.value.toLowerCase().trim();
-      const grid = document.getElementById('postsGrid');
-      if (!grid) return;
-      if (!q) { renderPosts(window._currentBlogCat || 'all'); return; }
-
-      const posts = await getStoredPosts();
-      const filtered = posts.filter(p =>
-        (p.title || '').toLowerCase().includes(q) ||
-        (p.excerpt || '').toLowerCase().includes(q) ||
-        (p.category || '').toLowerCase().includes(q) ||
-        (p.author || '').toLowerCase().includes(q)
-      );
-
-      if (!filtered.length) {
-        grid.innerHTML = `<p style="color:var(--text-muted);padding:40px;text-align:center;grid-column:1/-1">No posts found for "<strong>${q}</strong>"</p>`;
-        return;
-      }
-
-      const catColors = { tutorial:'#e63946', showcase:'#3b82f6', news:'#10b981', beforeafter:'#8b5cf6' };
-      grid.innerHTML = filtered.map(post => {
-        const locked = post.locked && !Auth.isLoggedIn;
-        return `
-          <article class="post-card ${locked ? 'locked' : ''}" onclick="openPost(${post.id})" style="cursor:pointer">
-            <div class="post-cat-tag" style="background:${catColors[post.category]||'#e63946'}22;color:${catColors[post.category]||'#e63946'};border:1px solid ${catColors[post.category]||'#e63946'}44">${post.cat_label || post.catLabel || post.category}</div>
-            <h3 class="post-title">${post.title}</h3>
-            <p class="post-excerpt">${post.excerpt}</p>
-            <div class="post-meta"><span>${post.author || 'CCS Team'}</span><span>${post.read_time || post.readTime || '5 min read'}</span></div>
-            ${locked ? '<div class="post-lock">🔐 Members Only — <button onclick="event.stopPropagation();openModal(\'loginModal\')" class="btn-inline">Join Free</button></div>' : ''}
-          </article>`;
-      }).join('');
-    });
-  });
-})();

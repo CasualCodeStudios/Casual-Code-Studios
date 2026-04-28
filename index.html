@@ -19,7 +19,7 @@
   <nav class="nav" id="mainNav">
     <a href="index.html" class="nav-logo">Casual <span>_Code_</span> Studios</a>
     <ul class="nav-links">
-      <li><a href="index.html"><img src="home.png" alt=""></a></li>
+      <li><a href="index.html"><img src="home.png" alt="home icon"></a></li>
       <li><a href="about.html">About</a></li>
       <li><a href="blog.html">Blog</a></li>
     </ul>
@@ -326,7 +326,7 @@
       </div>
     </div>
     <div style="text-align:center;margin-top:48px;">
-      <a href="about.html" class="btn btn-outline reveal">See All Projects →</a>
+      <a href="about.html#projects" class="btn btn-outline reveal">See All Projects →</a>
     </div>
   </section>
 
@@ -581,14 +581,14 @@
       <div class="hire-form-box reveal-right">
         <h3>Start a Project</h3>
         <p>Fill in the form and we'll get back to you within 24 hours.</p>
-        <form id="contactForm">
+        <form id="contactForm" action="https://formspree.io/f/mykldwoj" method="POST">
           <div class="form-group">
-            <label>Your Name</label>
-            <input type="text" name="name" class="form-input" placeholder="John Kamau" required>
+            <label>Full Name</label>
+            <input type="text" name="name" class="form-input" placeholder="Casual Code Studios" required>
           </div>
           <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" name="email" class="form-input" placeholder="john@example.com" required>
+            <label>Email</label>
+            <input type="email" name="email" class="form-input" placeholder="email@example.com" required>
           </div>
           <div class="form-group">
             <label>Phone (optional)</label>
@@ -598,6 +598,7 @@
             <label>Project Type</label>
             <select name="type" class="form-input">
               <option value="">Select a service...</option>
+              <option>Team Collaboration</option>
               <option>E-Commerce Website</option>
               <option>Portfolio Website</option>
               <option>Landing Page</option>
@@ -609,7 +610,7 @@
           </div>
           <div class="form-group">
             <label>Tell Us About Your Project</label>
-            <textarea name="message" class="form-input" placeholder="What are you building? Any references? Budget range?"></textarea>
+            <textarea name="message" class="form-input" placeholder="What's on your mind?? What are you building? Any references? Budget range? "></textarea>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
             Send Message <img src="spaceship.png" alt="spaceship">
@@ -746,7 +747,7 @@
         </div>
         <div class="form-group">
           <label>Email / WhatsApp</label>
-          <input type="text" name="contact" class="form-input" placeholder="email or +254..." required>
+          <input type="text" name="email" class="form-input" placeholder="email or +254..." required>
         </div>
         <div class="form-group">
           <label>What do you need?</label>
@@ -761,7 +762,7 @@
         </div>
         <div class="form-group">
           <label>Brief Description</label>
-          <textarea name="brief" class="form-input" placeholder="What are you building?" style="min-height:80px"></textarea>
+          <textarea name="message" class="form-input" placeholder="What are you building?" style="min-height:80px"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Enquiry →</button>
       </form>
@@ -777,17 +778,6 @@
   </div>
 
   <script src="app.js"></script>
-  <script>
-    function updateClock() {
-      const now = new Date();
-      let hours = now.getHours().toString().padStart(2, '0');
-      let minutes = now.getMinutes().toString().padStart(2, '0');
-      let seconds = now.getSeconds().toString().padStart(2, '0');
-      document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
-    }
 
-    setInterval(updateClock, 1000);
-    updateClock(); // initial call
-  </script>
 </body>
 </html>
