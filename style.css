@@ -196,8 +196,9 @@ input, textarea, select {
 }
 .live-cta{
    font-size:1.2rem;
+   font-weight: bold;
    color: green;
-   padding:1.5rem;
+   padding:1.05rem 1.5rem;
    border-radius:10px;
    animation: blink 2s infinite;
 }
