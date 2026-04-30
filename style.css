@@ -194,15 +194,16 @@ input, textarea, select {
   gap: 12px;
   flex-shrink: 0;
 }
+
 .live-cta{
    font-size:1.2rem;
    font-weight: bold;
    color: green;
    padding:1.05rem 1.5rem;
    border-radius:10px;
-   animation: blink 2s infinite;
+   animation: blinking 2s infinite;
 }
-@keyframes blink{
+@keyframes blinking{
    0%, 100%{
       color: red;
       opacity:0;
