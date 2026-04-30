@@ -224,6 +224,16 @@ input, textarea, select {
   background: red;
   animation: dot-blink 2s infinite;
 }
+.live-cta::after{
+  content: "";
+  position: absolute;right: 0;top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: red;
+  animation: dot-blink 2s infinite;
+}
 @keyframes dot-blink{
   0%, 100%{
     opacity: 0.5;
