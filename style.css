@@ -211,6 +211,19 @@ input, textarea, select {
       
    }
 }
+.live-cta span{
+  width: 8px;height: 8px;border-radius: 50%;background-color: green;animation: dot-blink 2s infinite;
+}
+@keyframes dot-blink{
+  0%, 100%{
+    opacity: 0.3;
+  }
+  50%{
+    opacity: 1;
+    background-color: red;
+  }
+}
+
 .theme-toggle {
   width: 40px; height: 40px;
   border-radius: 50%;
