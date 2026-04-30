@@ -196,6 +196,7 @@ input, textarea, select {
 }
 
 .live-cta{
+  position: relative;
   border: 2px solid red;
   display: flex;
   gap: 0.6rem;
@@ -213,8 +214,12 @@ input, textarea, select {
       
    }
 }
-.live-cta span{
-  width: 8px;height: 8px;border-radius: 50%;background-color: green;animation: dot-blink 2s infinite;
+.live-cta::before{
+  content: "";
+  position: absolute;left: 0;
+  width: 8px;
+  height: 8px;
+  background: green;
 }
 @keyframes dot-blink{
   0%, 100%{
