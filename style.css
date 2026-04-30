@@ -204,11 +204,9 @@ input, textarea, select {
 }
 @keyframes blinking{
    0%, 100%{
-      background: green;
       color: red;
    }
    50%{
-      background: red;
       color: green;
       
    }
