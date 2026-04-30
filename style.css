@@ -198,7 +198,6 @@ input, textarea, select {
 .live-cta{
    font-size:1.2rem;
    font-weight: bold;
-   color: red;
    padding:.5rem 1.2rem;
    border-radius:10px;
    animation: blinking 2s infinite;
@@ -206,10 +205,12 @@ input, textarea, select {
 @keyframes blinking{
    0%, 100%{
       background: green;
-      opacity:0;
+      color: red;
    }
    50%{
-      opacity:1;
+      background: none;
+      color: green;
+      
    }
 }
 .theme-toggle {
