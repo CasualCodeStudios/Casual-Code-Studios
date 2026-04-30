@@ -196,6 +196,8 @@ input, textarea, select {
 }
 
 .live-cta{
+  display: flex;
+  gap: 0.6rem;
    font-size:1.2rem;
    font-weight: bold;
    padding:.5rem 1.2rem;
