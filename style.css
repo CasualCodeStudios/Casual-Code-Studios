@@ -197,7 +197,7 @@ input, textarea, select {
 
 .live-cta{
   position: relative;
-  border: 2px solid red;
+  border: none;
   display: flex;
   gap: 0.6rem;
    font-size:1.2rem;
@@ -222,6 +222,7 @@ input, textarea, select {
   height: 12px;
   border-radius: 50%;
   background: green;
+  animation: dot-blink 2s infinite;
 }
 @keyframes dot-blink{
   0%, 100%{
