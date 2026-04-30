@@ -208,7 +208,7 @@ input, textarea, select {
       color: red;
    }
    50%{
-      background: none;
+      background: red;
       color: green;
       
    }
