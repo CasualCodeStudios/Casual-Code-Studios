@@ -203,10 +203,10 @@ input, textarea, select {
    animation: blinking 2s infinite;
 }
 @keyframes blinking{
-   0%, 100%{
+   0%,50%,100%{
       color: red;
    }
-   50%{
+   25%,75%{
       color: green;
       
    }
