@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e1117"/>
+      <stop offset="100%" stop-color="#111520"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e63946"/>
+      <stop offset="100%" stop-color="#9b1c2a"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+
+  <!-- Subtle red border glow -->
+  <rect width="64" height="64" rx="14" fill="none" stroke="#e63946" stroke-width="1.2" opacity="0.35"/>
+
+  <!-- Left bracket < -->
+  <polyline
+    points="18,22 10,32 18,42"
+    fill="none"
+    stroke="url(#red)"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#glow)"
+  />
+
+  <!-- Right bracket > -->
+  <polyline
+    points="46,22 54,32 46,42"
+    fill="none"
+    stroke="url(#red)"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#glow)"
+  />
+
+  <!-- Slash / in the centre (code motif) -->
+  <line
+    x1="38" y1="20"
+    x2="26" y2="44"
+    stroke="#f0ede6"
+    stroke-width="2.8"
+    stroke-linecap="round"
+    opacity="0.9"
+    filter="url(#glow)"
+  />
+
+  <!-- Tiny red dot — brand punctuation -->
+  <circle cx="32" cy="55" r="2.2" fill="#e63946" opacity="0.7"/>
+</svg>

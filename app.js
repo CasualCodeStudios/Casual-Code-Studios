@@ -1383,3 +1383,105 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateClock, 1000);
   updateClock();
 });
+
+
+/* ============================================================
+   SECTION 19: PORTFOLIO CATEGORY SYSTEM (about.html)
+   Moved from inline <script> in about.html into app.js.
+   Controls the sidebar category filter, flip-card visibility,
+   project count badge, and sticky sidebar behaviour.
+   ============================================================ */
+(function () {
+  /* Only run on pages that have the portfolio shell */
+  if (!document.getElementById('portfolioViewer')) return;
+
+  const CAT_META = {
+    ecommerce:   { icon:'<img src="shopping-cart.png" alt="E-Commerce">',   name:'E-Commerce',        desc:'Online stores built to sell. Product catalogs, cart systems, checkout flows, and payment UX that convert browsers into buyers.' },
+    portfolio:   { icon:'<img src="portfolio.png" alt="Portfolio Sites">',   name:'Portfolio Sites',   desc:'Personal showrooms for professionals — creatives, doctors, photographers — where work does the talking and clients take action.' },
+    landing:     { icon:'<img src="browser.png" alt="Landing Pages">',       name:'Landing Pages',     desc:'Single-purpose, high-converting pages for campaigns, launches, and lead generation. One goal, zero distractions.' },
+    business:    { icon:'<img src="shop.png" alt="Business Websites">',      name:'Business Websites', desc:'Full-featured company sites with team pages, services, testimonials, and contact systems that establish credibility and close deals.' },
+    services:    { icon:'<img src="setting.png" alt="Service Sites">',       name:'Service Sites',     desc:'Built for businesses that do things — towing, plumbing, cleaning, repairs. Fast contact flows, trust signals, and clear calls to action.' },
+    ngo:         { icon:'<img src="eco-friendly.png" alt="NGO / Nonprofit">',name:'NGO / Nonprofit',   desc:'Mission-driven websites for organisations that change the world — donation systems, volunteer sign-ups, impact storytelling, and accessibility first.' },
+    education:   { icon:'<img src="books.png" alt="Education">',             name:'Education',         desc:'Websites for schools, tutors, courses, and learning centres — course listings, enrolment forms, and digital learning integrations.' },
+    hospitality: { icon:'<img src="hospitality.png" alt="Hospitality">',     name:'Hospitality',       desc:'Restaurants, hotels, resorts, and event venues — designed to showcase experience, build anticipation, and drive bookings.' },
+    events:      { icon:'<img src="events.png" alt="Events">',               name:'Events',            desc:'Countdown timers, speaker lineups, schedules, and ticket integrations that turn event excitement into registrations and revenue.' },
+    blog:        { icon:'<img src="blog.png" alt="Blog / Magazine">',        name:'Blog / Magazine',   desc:'Content-first platforms built to read beautifully, load fast, and grow audiences — with categories, search, and newsletter integrations.' },
+    saas:        { icon:'<img src="saas.png" alt="SaaS / Startup">',         name:'SaaS / Startup',    desc:'Product websites for software companies — clear feature explanations, pricing tables, demo requests, and conversion-optimised funnels.' },
+    personal:    { icon:'<img src="brand.png" alt="Personal Brand">',        name:'Personal Brand',    desc:'Sites for coaches, speakers, consultants, and influencers — storytelling, testimonials, media kits, and booking integrations that open doors.' },
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const links    = document.querySelectorAll('.psb-link');
+    const cards    = document.querySelectorAll('.flip-card');
+    const pvGrid   = document.getElementById('pvGrid');
+    const pvEmpty  = document.getElementById('pvEmpty');
+    const pvIcon   = document.getElementById('pvCatIcon');
+    const pvName   = document.getElementById('pvCatName');
+    const pvDesc   = document.getElementById('pvCatDesc');
+    const pvBadge  = document.getElementById('pvCatBadge');
+    const psbCount = document.getElementById('psbCount');
+
+    if (psbCount) psbCount.textContent = Object.keys(CAT_META).length;
+
+    function filterTo(cat) {
+      /* Update sidebar active state */
+      links.forEach(l => l.classList.toggle('active', l.dataset.cat === cat));
+
+      /* Update category header */
+      const m = CAT_META[cat] || CAT_META.ecommerce;
+      if (pvIcon)  pvIcon.innerHTML    = m.icon;
+      if (pvName)  pvName.textContent  = m.name;
+      if (pvDesc)  pvDesc.textContent  = m.desc;
+
+      /* Show / hide cards
+         - dev-slot cards  → always hidden (developer-only placeholders)
+         - flip-card--cta  → always visible in every category
+         - all other cards → visible only when data-cat matches */
+      let realVisible = 0;
+      cards.forEach(card => {
+        const isDevSlot  = card.classList.contains('dev-slot');
+        const isCTA      = card.classList.contains('flip-card--cta');
+        const catList    = card.dataset.cat ? card.dataset.cat.split(' ') : [];
+        const matchesCat = catList.includes(cat);
+
+        if (isDevSlot) {
+          card.style.display = 'none';
+        } else if (isCTA) {
+          card.style.display = '';
+        } else {
+          card.style.display = matchesCat ? '' : 'none';
+          if (matchesCat) realVisible++;
+        }
+      });
+
+      /* Badge shows only real project count */
+      if (pvBadge) pvBadge.textContent = realVisible + (realVisible === 1 ? ' Project' : ' Projects');
+      if (pvEmpty) pvEmpty.style.display = realVisible === 0 ? 'flex' : 'none';
+      if (pvGrid)  pvGrid.style.display  = '';
+    }
+
+    /* Sidebar link clicks */
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        filterTo(link.dataset.cat);
+        if (window.innerWidth < 900) {
+          document.getElementById('portfolioViewer')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    /* Sticky sidebar behaviour tied to #projects section */
+    const sidebar = document.getElementById('portfolioSidebar');
+    const section = document.getElementById('projects');
+    if (sidebar && section) {
+      window.addEventListener('scroll', () => {
+        const rect = section.getBoundingClientRect();
+        sidebar.classList.toggle('psb-sticky', rect.top <= 0 && rect.bottom > window.innerHeight);
+      }, { passive: true });
+    }
+
+    /* Default category on load */
+    filterTo('ecommerce');
+  });
+})();

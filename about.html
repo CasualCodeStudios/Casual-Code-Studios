@@ -9,6 +9,47 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    /* Normal page scroll — no snap, no transitions between sections */
+    html { scroll-behavior: smooth; }
+
+    /* Scroll-to-top button */
+    #scroll-top-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--red, #e63946);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 20px rgba(230,57,70,0.45);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+    #scroll-top-btn.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    #scroll-top-btn:hover {
+      background: var(--red-dark, #9b1c2a);
+    }
+    @media (max-width: 600px) {
+      #scroll-top-btn { bottom: 20px; right: 16px; }
+    }
+  </style>
 </head>
 <body>
   <div class="cursor"></div>
@@ -109,7 +150,6 @@
     </div>
   </section>
 
-  <div class="divider"></div>
 
   <!-- SKILLS -->
   <section class="skills-section" id="skills">
@@ -340,14 +380,398 @@
     </div>
   </section>
 
-  <!-- PROJECTS -->
+  <!-- PROJECTS — CATEGORIZED PORTFOLIO -->
   <section class="projects-section" id="projects">
     <div class="section-header reveal">
       <div class="section-tag">Our Portfolio</div>
-      <h2 class="section-title">Work to be <span><em>Shipped</em></span></h2>
-      <p class="section-sub">From farms to fashion to towing — we build for everyone.</p>
+      <h2 class="section-title">Work We've <span><em>Shipped</em></span></h2>
+      <p class="section-sub">Browse our work by category — from farms to fashion, towing to tech. Click a category to explore.</p>
     </div>
-    <div class="projects-full-grid">
+
+    <!-- PORTFOLIO SHELL: sidebar + viewer -->
+    <div class="portfolio-shell">
+
+      <!-- FIXED CATEGORY SIDEBAR -->
+      <aside class="portfolio-sidebar" id="portfolioSidebar">
+        <div class="psb-header">
+          <span class="psb-title">Categories</span>
+          <span class="psb-count" id="psbCount"></span>
+        </div>
+        <nav class="psb-nav">
+          <a href="#" class="psb-link active" data-cat="ecommerce">
+            <span class="psb-icon"><img src="shopping-cart.png" alt="shopping cart"></span>
+            <span class="psb-label">E-Commerce</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="portfolio">
+            <span class="psb-icon"><img src="portfolio.png" alt="portfolio"></span>
+            <span class="psb-label">Portfolio Sites</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="landing">
+            <span class="psb-icon"><img src="browser.png" alt="browser icon"></span>
+            <span class="psb-label">Landing Pages</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="business">
+            <span class="psb-icon"><img src="shop.png" alt="shop icon"></span>
+            <span class="psb-label">Business Sites</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="services">
+            <span class="psb-icon"><img src="setting.png" alt="settings icon"></span>
+            <span class="psb-label">Service Sites</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="ngo">
+            <span class="psb-icon"><img src="eco-friendly.png" alt="ngo icon"></span>
+            <span class="psb-label">NGO / Nonprofit</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="education">
+            <span class="psb-icon"><img src="books.png" alt="books icon"></span>
+            <span class="psb-label">Education</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="hospitality">
+            <span class="psb-icon"><img src="hospitality.png" alt="hospitality icon"></span>
+            <span class="psb-label">Hospitality</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="events">
+            <span class="psb-icon"><img src="events.png" alt="events icon"></span>
+            <span class="psb-label">Events</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="blog">
+            <span class="psb-icon"><img src="blog.png" alt="blog icon"></span>
+            <span class="psb-label">Blog / Magazine</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="saas">
+            <span class="psb-icon"><img src="saas.png" alt="startup icon"></span>
+            <span class="psb-label">SaaS / Startup</span>
+          </a>
+          <a href="#" class="psb-link" data-cat="personal">
+            <span class="psb-icon"><img src="brand.png" alt="brand icon"></span>
+            <span class="psb-label">Personal Brand</span>
+          </a>
+        </nav>
+        <div class="psb-footer">
+          <span>Casual Code Studios</span>
+        </div>
+      </aside>
+
+      <!-- CATEGORY VIEWER (spans remaining viewport) -->
+      <div class="portfolio-viewer" id="portfolioViewer">
+
+        <!-- CATEGORY HEADER (changes per selection) -->
+        <div class="pv-cat-header" id="pvCatHeader">
+          <div class="pv-cat-icon" id="pvCatIcon"></div>
+          <div class="pv-cat-meta">
+            <h3 class="pv-cat-name" id="pvCatName">All Projects</h3>
+            <p class="pv-cat-desc" id="pvCatDesc">Every website we've built or are currently developing — spanning all categories and industries.</p>
+          </div>
+          <div class="pv-cat-badge" id="pvCatBadge">6 Projects</div>
+        </div>
+
+        <!-- FLIP CARDS GRID -->
+        <div class="pv-grid" id="pvGrid">
+
+          <!-- ── E-COMMERCE ── -->
+          <div class="flip-card" data-cat="ecommerce">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <div class="flip-thumb" style="background:linear-gradient(135deg,#0f2027,#203a43)">
+                  <img src="sunrise-template.png" alt="Sunrise Valley Farms">
+                  <span class="flip-status badge-red">✓ In Dev</span>
+                </div>
+                <div class="flip-front-info">
+                  <span class="flip-cat-label">E-Commerce · Farm</span>
+                  <h4>SunRise Valley Farms</h4>
+                </div>
+                <div class="flip-hint">Hover to flip ↻</div>
+              </div>
+              <div class="flip-back">
+                <div class="flip-back-cat"><img src="shopping-cart.png" alt="E-Commerce"> E-Commerce</div>
+                <h4>SunRise Valley Farms</h4>
+                <p>A farm-to-table e-commerce experience connecting SunRise Valley's sustainable produce with health-conscious buyers. Clean UI, warm photography, and a checkout flow that converts.</p>
+                <div class="flip-tags">
+                  <span>HTML</span><span>CSS</span><span>JS</span>
+                </div>
+                <div class="flip-links">
+                  <a href="https://sunrise-valley-farms.vercel.app/" target="_blank" class="flip-btn-primary">Live Preview →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flip-card" data-cat="ecommerce">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <div class="flip-thumb" style="background:linear-gradient(135deg,#1a0a2e,#2a1a4e)">
+                  <img src="bemilwis-template.png" alt="Bemilwis Boutique">
+                  <span class="flip-status badge-red">✓ In Dev</span>
+                </div>
+                <div class="flip-front-info">
+                  <span class="flip-cat-label">E-Commerce · Fashion</span>
+                  <h4>Bemilwis Boutique</h4>
+                </div>
+                <div class="flip-hint">Hover to flip ↻</div>
+              </div>
+              <div class="flip-back">
+                <div class="flip-back-cat"><img src="shopping-cart.png" alt="E-Commerce"> E-Commerce</div>
+                <h4>Bemilwis Boutique</h4>
+                <p>A curated fashion boutique featuring shoes and clothing that blends comfort with elegance. Timeless design meets seamless browsing on any device.</p>
+                <div class="flip-tags">
+                  <span>HTML</span><span>CSS</span><span>JS</span>
+                </div>
+                <div class="flip-links">
+                  <a href="https://bemilwis-umber.vercel.app/" target="_blank" class="flip-btn-primary">Live Preview →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── PORTFOLIO ── -->
+           <!-- Edgar karori -->
+          <div class="flip-card" data-cat="portfolio">
+            <div class="flip-inner" >
+              <div class="flip-front">
+                <div class="flip-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+                  <img src="portfolio-physio.png" alt="Physiotherapist Portfolio">
+                  <span class="flip-status badge-green">✓ Live</span>
+                </div>
+                <div class="flip-front-info">
+                  <span class="flip-cat-label">Portfolio · Healthcare</span>
+                  <h4>Personal Physiotherapist</h4>
+                </div>
+                <div class="flip-hint">Hover to flip ↻</div>
+              </div>
+              <div class="flip-back">
+                <div class="flip-back-cat"><img src="portfolio.png" alt="Portfolio"> Portfolio Site</div>
+                <h4>Personal Physiotherapist Portfolio</h4>
+                <p>A personal portfolio for a Nairobi-based physiotherapist. Sports injury rehabilitation, post-surgery recovery, and personalised exercise programs presented with a polished, professional aesthetic.</p>
+                <div class="flip-tags">
+                  <span>HTML/CSS/JS</span><span>GSAP</span>
+                </div>
+                <div class="flip-links">
+                  <a href="https://bemilwis-umber.vercel.app/" target="_blank" class="flip-btn-primary">Live Preview →</a>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+
+          <!-- Shantel Ondieki -->
+          <div class="flip-card" data-cat="portfolio">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <div class="flip-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+                  <img src="shantel-thumbnail.png" alt="CBE Facilitator Portfolio">
+                  <span class="flip-status badge-green">✓ Live</span>
+                </div>
+                <div class="flip-front-info">
+        <span class="flip-cat-label">Portfolio · Education</span>
+                  <h4>CBE Facilitator Portfolio</h4>
+                </div>
+                <div class="flip-hint">Hover to flip ↻</div>
+              </div>
+              <div class="flip-back">
+                <div class="flip-back-cat"><img src="portfolio.png" alt="Portfolio"> Portfolio Site</div>
+      <h4>CBE Facilitator Portfolio</h4>
+      <p>A professional portfolio for a Competency-Based Education facilitator — showcasing teaching philosophy, subject expertise, learner milestones, and a curated record of curriculum work and professional development.</p>
+                <div class="flip-tags">
+                  <span>HTML/CSS/JS</span>
+                </div>
+                <div class="flip-links">
+                  <a href="https://shantel-de-teacher.vercel.app/" target="_blank" class="flip-btn-primary">Live Preview →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dennis Wambua -->
+           <div class="flip-card" data-cat="portfolio">
+  <div class="flip-inner">
+    <div class="flip-front">
+      <div class="flip-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+        <img src="dennis-thumbnail.png" alt="Heavy Equipment Operator Portfolio">
+        <span class="flip-status badge-green">✓ Live</span>
+      </div>
+      <div class="flip-front-info">
+        <span class="flip-cat-label">Portfolio · Construction</span>
+        <h4>Heavy Equipment Operator</h4>
+      </div>
+      <div class="flip-hint">Hover to flip ↻</div>
+    </div>
+    <div class="flip-back">
+      <div class="flip-back-cat"><img src="portfolio.png" alt="Portfolio"> Portfolio Site</div>
+      <h4>Heavy Equipment Operator</h4>
+      <p>A portfolio for a Mombasa-based heavy equipment operator — covering machinery certifications, site experience, equipment specialisations, and a professional profile built to land contracts and opportunities.</p>
+      <div class="flip-tags">
+        <span>HTML/CSS/JS</span>
+      </div>
+      <div class="flip-links">
+        <a href="https://wambua-dennis-portfolio.vercel.app/" target="_blank" class="flip-btn-primary">Live Preview →</a>
+      </div>
+    </div>
+  </div>
+            </div>
+
+          <!-- Gideon Rono -->
+           <div class="flip-card" data-cat="portfolio">
+  <div class="flip-inner">
+    <div class="flip-front">
+      <div class="flip-thumb" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+        <img src="rono-thumbnail.png" alt="ICT & CBE Educator Portfolio">
+        <span class="flip-status badge-green">✓ Live</span>
+      </div>
+      <div class="flip-front-info">
+        <span class="flip-cat-label">Portfolio · Education & ICT</span>
+        <h4>ICT & CBE Educator</h4>
+      </div>
+      <div class="flip-hint">Hover to flip ↻</div>
+    </div>
+    <div class="flip-back">
+      <div class="flip-back-cat"><img src="portfolio.png" alt="Portfolio"> Portfolio Site</div>
+      <h4>ICT & CBE Educator Portfolio</h4>
+      <p>Empowering learners and educators through ICT, competency-based education, and a relentless commitment to excellence in Kenya's classrooms.</p>
+      <div class="flip-tags">
+        <span>HTML/CSS/JS</span>
+      </div>
+      <div class="flip-links">
+        <a href="https://gideon-rono-portfolio.vercel.app/" target="_blank" class="flip-btn-primary">Live Preview →</a>
+      </div>
+    </div>
+  </div>
+            </div>
+
+
+          <!-- ── SERVICE SITE ── -->
+          <div class="flip-card" data-cat="services">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <div class="flip-thumb" style="background:linear-gradient(135deg,#0a0a0a,#1a1a1a)">
+                  <img src="https://i.pinimg.com/736x/8b/b1/78/8bb178d5cd55485d3792dda4dcf67440.jpg" alt="De-Tow Services">
+                  <span class="flip-status badge-red">✓ In Dev</span>
+                </div>
+                <div class="flip-front-info">
+                  <span class="flip-cat-label">Services · Automotive</span>
+                  <h4>De-Tow Services</h4>
+                </div>
+                <div class="flip-hint">Hover to flip ↻</div>
+              </div>
+              <div class="flip-back">
+                <div class="flip-back-cat"><img src="setting.png" alt="Services"> Service Site</div>
+                <h4>De-Tow Services</h4>
+                <p>Roadside assistance and towing services site built for fast action. The design screams reliability and the contact flow gets drivers help immediately — no friction, no delays.</p>
+                <div class="flip-tags">
+                  <span>HTML</span><span>CSS</span><span>JS</span>
+                </div>
+                <div class="flip-links">
+                  <a href="https://de-tow.vercel.app/" target="_blank" class="flip-btn-primary">Live Preview →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── HOSPITALITY / LANDING ── -->
+          <div class="flip-card" data-cat="hospitality landing">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <div class="flip-thumb" style="background:linear-gradient(135deg,#0f2027,#203a43)">
+                  <img src="https://i.pinimg.com/736x/2d/54/fd/2d54fd3e677d9564eafe44cd7bf13e74.jpg" alt="Local Eatery">
+                  <span class="flip-status badge-coming">🔜 Coming Soon</span>
+                </div>
+                <div class="flip-front-info">
+                  <span class="flip-cat-label">Hospitality · Landing Page</span>
+                  <h4>Local Eatery Landing Page</h4>
+                </div>
+                <div class="flip-hint">Hover to flip ↻</div>
+              </div>
+              <div class="flip-back">
+                <div class="flip-back-cat"><img src="hospitality.png" alt="Hospitality"> Hospitality</div>
+                <h4>Local Eatery Landing Page</h4>
+                <p>A high-converting landing page for a Nyeri eatery — mouth-watering visuals, menu integration, and an online reservation system that turns browsers into diners.</p>
+                <div class="flip-tags">
+                  <span>HTML/CSS/JS</span>
+                </div>
+                <div class="flip-links">
+                  <span class="flip-btn-ghost">In Progress</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── NGO / EDUCATION ── -->
+          <div class="flip-card" data-cat="ngo education">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <div class="flip-thumb" style="background:linear-gradient(135deg,#1a0000,#3d0000)">
+                  <img src="https://i.pinimg.com/736x/62/3b/75/623b757efbf1346777fd00b272473c4f.jpg" alt="Community Learning Center">
+                  <span class="flip-status badge-coming">🔜 Coming Soon</span>
+                </div>
+                <div class="flip-front-info">
+                  <span class="flip-cat-label">NGO · Education</span>
+                  <h4>Community Learning Center</h4>
+                </div>
+                <div class="flip-hint">Hover to flip ↻</div>
+              </div>
+              <div class="flip-back">
+                <div class="flip-back-cat"><img src="eco-friendly.png" alt="NGO"> NGO / Education</div>
+                <h4>Community Learning Center</h4>
+                <p>A clean, accessible website for a community learning center — course listings, volunteer sign-ups, and a donation section that actually converts supporters into contributors.</p>
+                <div class="flip-tags">
+                  <span>HTML/CSS/JS</span>
+                </div>
+                <div class="flip-links">
+                  <span class="flip-btn-ghost">In Progress</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+          <!--
+          ═══════════════════════════════════════════════════════
+          CTA CARD — VISIBLE IN EVERY CATEGORY — ATTRACTS CLIENTS
+          ═══════════════════════════════════════════════════════
+          -->
+          <div class="flip-card flip-card--cta" data-cat="ecommerce portfolio landing business services ngo education hospitality events blog saas personal">
+            <div class="flip-inner">
+              <div class="flip-front">
+                <div class="flip-thumb flip-thumb--cta">
+                  <div class="flip-cta-pulse"></div>
+                  <span class="flip-cta-icon">✨</span>
+                  <span class="flip-cta-text">Project Thumbnail</span>
+                </div>
+                <div class="flip-front-info">
+                  <span class="flip-cat-label">Open for Bookings</span>
+                  <h4>Be Our Next Project</h4>
+                </div>
+                <div class="flip-hint">Hover to learn more ↻</div>
+              </div>
+              <div class="flip-back flip-back--cta">
+                <div class="flip-back-cat"><img src="browser.png" alt="Project"> Let's Build Together</div>
+                <h4>This Slot Could Be Yours</h4>
+                <p>We're actively taking on new projects. Get a clean, fast, and stunning website that makes your brand unforgettable — built in days, not months.</p>
+                <div class="flip-tags">
+                  <span>Fast Delivery</span><span>Affordable</span><span>Quality Guaranteed</span>
+                </div>
+                <div class="flip-links">
+                  <a href="index.html#hire" class="flip-btn-primary">Start a Project →</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /pv-grid -->
+
+        <!-- EMPTY STATE — shown only if zero real cards in a category -->
+        <div class="pv-empty" id="pvEmpty" style="display:none">
+          <span class="pv-empty-icon">🚀</span>
+          <h4>We're ready to build in this category!</h4>
+          <p>No projects here yet — but that means yours could be the very first. Be the pioneer.</p>
+          <a href="index.html#hire" class="btn btn-primary" style="margin-top:16px">Claim This Spot →</a>
+        </div>
+
+      </div><!-- /portfolio-viewer -->
+    </div><!-- /portfolio-shell -->
+
+    <!-- OLD GRID (removed — replaced by above) -->
+    <div class="projects-full-grid" style="display:none">
       <!-- SUNRISE VALLEY FARMS -->
       <div class="project-full-card reveal d1">
         <div class="project-full-img">
@@ -529,7 +953,7 @@
       <span>© 2026 Casual Code Studios.</span>
       <span>HTML · CSS · JavaScript</span>
     </div>
-  </footer>
+    </footer>
 
   <!-- Modals (reused from index) -->
   <div class="modal-overlay" id="loginModal">
@@ -574,6 +998,100 @@
     </div>
   </div>
 
+  <!-- PORTFOLIO CATEGORY SYSTEM -->
+  <script>
+  (function(){
+    const CAT_META = {
+      ecommerce:   { icon:'<img src="shopping-cart.png" alt="E-Commerce">',  name:'E-Commerce',         desc:'Online stores built to sell. Product catalogs, cart systems, checkout flows, and payment UX that convert browsers into buyers.' },
+      portfolio:   { icon:'<img src="portfolio.png" alt="Portfolio Sites">',  name:'Portfolio Sites',    desc:'Personal showrooms for professionals — creatives, doctors, photographers — where work does the talking and clients take action.' },
+      landing:     { icon:'<img src="browser.png" alt="Landing Pages">',      name:'Landing Pages',      desc:'Single-purpose, high-converting pages for campaigns, launches, and lead generation. One goal, zero distractions.' },
+      business:    { icon:'<img src="shop.png" alt="Business Websites">',     name:'Business Websites',  desc:'Full-featured company sites with team pages, services, testimonials, and contact systems that establish credibility and close deals.' },
+      services:    { icon:'<img src="setting.png" alt="Service Sites">',      name:'Service Sites',      desc:'Built for businesses that do things — towing, plumbing, cleaning, repairs. Fast contact flows, trust signals, and clear calls to action.' },
+      ngo:         { icon:'<img src="eco-friendly.png" alt="NGO / Nonprofit">',name:'NGO / Nonprofit',   desc:'Mission-driven websites for organisations that change the world — donation systems, volunteer sign-ups, impact storytelling, and accessibility first.' },
+      education:   { icon:'<img src="books.png" alt="Education">',            name:'Education',          desc:'Websites for schools, tutors, courses, and learning centres — course listings, enrolment forms, and digital learning integrations.' },
+      hospitality: { icon:'<img src="hospitality.png" alt="Hospitality">',    name:'Hospitality',        desc:'Restaurants, hotels, resorts, and event venues — designed to showcase experience, build anticipation, and drive bookings.' },
+      events:      { icon:'<img src="events.png" alt="Events">',              name:'Events',             desc:'Countdown timers, speaker lineups, schedules, and ticket integrations that turn event excitement into registrations and revenue.' },
+      blog:        { icon:'<img src="blog.png" alt="Blog / Magazine">',       name:'Blog / Magazine',    desc:'Content-first platforms built to read beautifully, load fast, and grow audiences — with categories, search, and newsletter integrations.' },
+      saas:        { icon:'<img src="saas.png" alt="SaaS / Startup">',        name:'SaaS / Startup',     desc:'Product websites for software companies — clear feature explanations, pricing tables, demo requests, and conversion-optimised funnels.' },
+      personal:    { icon:'<img src="brand.png" alt="Personal Brand">',       name:'Personal Brand',     desc:'Sites for coaches, speakers, consultants, and influencers — storytelling, testimonials, media kits, and booking integrations that open doors.' },
+    };
+
+    const links   = document.querySelectorAll('.psb-link');
+    const cards   = document.querySelectorAll('.flip-card');
+    const pvGrid  = document.getElementById('pvGrid');
+    const pvEmpty = document.getElementById('pvEmpty');
+    const pvIcon  = document.getElementById('pvCatIcon');
+    const pvName  = document.getElementById('pvCatName');
+    const pvDesc  = document.getElementById('pvCatDesc');
+    const pvBadge = document.getElementById('pvCatBadge');
+    const psbCount= document.getElementById('psbCount');
+
+    psbCount.textContent = Object.keys(CAT_META).length;
+
+    function filterTo(cat) {
+      // Update sidebar active
+      links.forEach(l => l.classList.toggle('active', l.dataset.cat === cat));
+
+      // Update header
+      const m = CAT_META[cat] || CAT_META.ecommerce;
+      pvIcon.innerHTML = m.icon;
+      pvName.textContent = m.name;
+      pvDesc.textContent = m.desc;
+
+      // Show/hide cards
+      // dev-slot cards = always hidden from users (developer use only)
+      // flip-card--cta = always visible in every category
+      // All other cards = shown only if their data-cat matches the active category
+      let realVisible = 0;
+      cards.forEach(card => {
+        const isDevSlot = card.classList.contains('dev-slot');
+        const isCTA     = card.classList.contains('flip-card--cta');
+        const cats = card.dataset.cat ? card.dataset.cat.split(' ') : [];
+        const matchesCat = cats.includes(cat);
+
+        if (isDevSlot) {
+          card.style.display = 'none'; // always hidden
+        } else if (isCTA) {
+          card.style.display = ''; // always visible
+        } else {
+          card.style.display = matchesCat ? '' : 'none';
+          if (matchesCat) realVisible++;
+        }
+      });
+
+      // Badge counts only real projects (dev slots & CTA card excluded)
+      pvBadge.textContent = realVisible + (realVisible === 1 ? ' Project' : ' Projects');
+      pvEmpty.style.display = realVisible === 0 ? 'flex' : 'none';
+      pvGrid.style.display  = ''; // grid always visible (CTA card is always there)
+    }
+
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        filterTo(link.dataset.cat);
+        // On mobile scroll viewer into view
+        if (window.innerWidth < 900) {
+          document.getElementById('portfolioViewer').scrollIntoView({ behavior:'smooth' });
+        }
+      });
+    });
+
+    // Sidebar sticky behaviour tied to projects section
+    const sidebar = document.getElementById('portfolioSidebar');
+    const section = document.getElementById('projects');
+    window.addEventListener('scroll', () => {
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      sidebar.classList.toggle('psb-sticky', rect.top <= 0 && rect.bottom > window.innerHeight);
+    }, { passive: true });
+
+    filterTo('ecommerce');
+  })();
+  </script>
+
   <script src="app.js"></script>
+
+
+
 </body>
 </html>
