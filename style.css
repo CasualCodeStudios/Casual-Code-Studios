@@ -1484,6 +1484,13 @@ select.form-input { cursor: pointer; }
   color: var(--text-dim);
 }
 
+/* BUTTONS COURSE SECTION */
+.course-btn{
+  padding: 1rem 0;
+  background: rgba(116, 26, 26, 0.521);
+  color: rgba(255, 166, 0, 0.726);
+}
+
 /* ===== TESTIMONIALS ===== */
 .testimonials-section { padding: 120px 40px; }
 .testi-grid {
