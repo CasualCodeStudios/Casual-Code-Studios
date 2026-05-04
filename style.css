@@ -1486,10 +1486,10 @@ select.form-input { cursor: pointer; }
 
 /* BUTTONS COURSE SECTION */
 .course-btn{
-  padding: 0.5rem 0.3rem;
+  padding:0.3rem;
   border-radius: 16px;
   font-family: var(--font-mono);
-  background: rgba(82, 15, 15, 0.521);
+  background: none;
   color: rgba(255, 166, 0, 0.726);
   text-decoration: none;
   transition: 0.3s ease;
