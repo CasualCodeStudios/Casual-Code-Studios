@@ -1442,6 +1442,7 @@ select.form-input {
 
 /* ===== TOOLS & INSPIRATION SECTION ===== */
 .tools-section {
+  display: none;
   padding: 80px 40px;
 }
 .tools-logos-grid {
