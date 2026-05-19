@@ -1003,6 +1003,7 @@ select.form-input {
   animation: fade-up 0.7s 0.65s var(--ease) forwards;
 }
 .stat-item {
+  text-align: center;
   padding: .5rem;
   transition: 0.3s ease;
 }
