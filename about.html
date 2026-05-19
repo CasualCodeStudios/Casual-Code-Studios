@@ -55,22 +55,33 @@
   <div class="cursor"></div>
   <div class="cursor-ring"></div>
 
-  <!-- NAV -->
+
+  <!-- ===== NAV ===== -->
+<header class="main-header">
+  <a href="index.html" class="nav-logo"><img src="official-logo.png" alt="logo"></a>
+
   <nav class="nav">
-    <a href="index.html" class="nav-logo"><img src="official-logo.png" alt="logo"></a>
     <ul class="nav-links">
-      <li><a href="index.html"><img src="home.png" alt=""></a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="blog.html">Blog</a></li>
+      <a href="index.html" class="home-icon"><img src="home.png" alt="home icon"></a>
+      <a href="about.html">About</a>
     </ul>
-    <div class="nav-actions">
-      <button class="theme-toggle" title="Toggle theme"><img class="theme-icon" src="happy-sun.png" alt="sun icon" style="width:22px;height:22px"></button>
-      <a href="index.html#hire" class="btn-nav">Start Project</a>
-      <button class="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
   </nav>
+      <!-- dark mode toggle and menu btn -->
+  <div class="nav-actions">
+    <!-- dark mode toggle -->
+      <button class="theme-toggle" title="Toggle theme">
+        <img src="night-mode.png" alt="night-mode toggle">
+      </button>
+      <!-- menu -->
+      <button class="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+  </div>
+
+</header>
   
   <div class="nav-drawer">
     <a href="index.html">Home</a>

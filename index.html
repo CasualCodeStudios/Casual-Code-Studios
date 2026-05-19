@@ -17,30 +17,31 @@
   <div class="cursor-ring"><div id="clock"></div></div>
 
   <!-- ===== NAV ===== -->
-  <nav class="nav" id="mainNav">
-    <a href="index.html" class="nav-logo"><img src="official-logo.png" alt="logo"></a>
-    <ul class="nav-links">
-      <li><a href="index.html"><img src="home.png" alt="home icon"></a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="blog.html">Blog</a></li>
-    </ul>
+<header class="main-header">
+  <a href="index.html" class="nav-logo"><img src="official-logo.png" alt="logo"></a>
 
-    <!-- Live blink banner -->
-     <!-- center the .live-cta in the header. Also let it appear in both bigger screens and in smaller screens. Redesign it to match the look of the website but let it look cooler. -->
-    <span class="live-cta">LIVE</span>
-    <div class="nav-actions">
-      <button class="theme-toggle" title="Toggle theme"><img class="theme-icon" src="happy-sun.png" alt="happy sun icon"></button>
-      <a href="blog.html" class="btn-nav show-if-logged-out">Join Community</a>
-      <span class="show-if-logged-in" style="display:none">
-        <button class="btn-nav logout-btn" style="background:transparent;color:var(--red);border-color:var(--red)">
-          Hi, <span class="user-display-name"></span> · Logout
-        </button>
-      </span>
-      <button class="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+  <nav class="nav">
+    <ul class="nav-links">
+      <a href="index.html" class="home-icon"><img src="home.png" alt="home icon"></a>
+      <a href="about.html">About</a>
+    </ul>
   </nav>
+      <!-- dark mode toggle and menu btn -->
+  <div class="nav-actions">
+    <!-- dark mode toggle -->
+      <button class="theme-toggle" title="Toggle theme">
+        <img src="night-mode.png" alt="night-mode toggle">
+      </button>
+      <!-- menu -->
+      <button class="hamburger" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+  </div>
+
+</header>
 
   <!-- Mobile Nav Drawer -->
   <div class="nav-drawer">
@@ -50,52 +51,57 @@
     <a href="#services">Services</a>
     <a href="#pricing">Pricing</a>
     <a href="#hire">Hire Us</a>
-    <button class="btn show-if-logged-out btn-primary" onclick="openModal('loginModal')" style="margin-top:16px">Join Community</button>
   </div>
 
   <!-- ===== HERO ===== -->
- 
   <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-grid-lines"></div>
-    <div class="hero-content">
-      <div class="hero-left">
-        <div class="hero-eyebrow">Nyeri, Kenya · Est. 2024</div>
+    <div class="hero-content-1">
+              <div class="hero-eyebrow">Nyeri, Kenya · Est. 2024</div>
         <h1 class="hero-h1">
-          <span class="hero-we-are">We are,</span><br>
+          <span class="hero-we-are">We are,
+            <img src="wheel.png" alt="wheel" class="steer-wheel">
+          </span><br>
           <span class="brand-name">Casual </span>
-          <span class="brand-name"><span class="underscore"> .code.</span></span>
+          <span class="brand-name"><span class="underscore"> &lt;code/&gt;</span></span>
           <span class="brand-name">Studios</span>
+          
         </h1>
+    <div class="hero-content">
+      
+      <!-- hero left section -->
+      <div class="hero-left">
+
         <p class="hero-tagline">
-          A frontend web development agency crafting e-commerce stores, portfolios, landing pages, and digital experiences that actually convert — built with HTML, CSS, JavaScript & AI.
+          A <span class="hightlighted">web design</span> and <span class="hightlighted">development agency</span>,<br> crafting <span class="underlined">e-commerce stores</span>, <span class="underlined">portfolios</span>, <span class="underlined">landing pages</span>, and digital experiences that actually convert.
         </p>
+        <!-- infinite typing -->
         <div class="typing-row">
-          <span class="typing-prefix">// Who we are:</span>
+          <span class="typing-prefix">// What we do:</span>
           <span class="typing-text" id="typingHero"></span><span class="typing-cursor"></span>
         </div>
+        <!-- hero cta buttons -->
         <div class="hero-cta">
           <a href="#hire" class="btn btn-primary"><img src="spaceship.png" alt="idea bulb"> Start a Project</a>
           <a href="about.html" class="btn btn-outline">View Our Work</a>
         </div>
+        <!-- hero stats -->
         <div class="hero-stats">
-          <div class="stat-item">
+          <div class="stat-item" style="width: 60px; height: 60px;border-radius: 50%; background:rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 238, 221, 0.3);">
             <div class="stat-num" data-count="12" data-suffix="+">0+</div>
-            <div class="stat-label">Projects Shipped</div>
+            <div class="stat-label">Projects</div>
           </div>
           <div class="stat-item">
             <div class="stat-num" data-count="100" data-suffix="%">0%</div>
-            <div class="stat-label">Client Satisfaction</div>
+            <div class="stat-label">Satisfaction</div>
           </div>
-          <div class="stat-item">
-            <div class="stat-num" data-count="3" data-suffix=" langs">0</div>
-            <div class="stat-label">Core Languages</div>
+          <div class="stat-item" style="width: 60px; height: 60px;border-radius: 50%; background:rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 238, 221, 0.3);">
+            <div class="stat-num" data-count="3" data-suffix="+">0</div>
+            <div class="stat-label">Languages</div>
           </div>
         </div>
       </div>
+
       <!--  Right hero section -->
-      <!-- This section is not really necessary you can comment it out -->
-       <!-- I need the image "hero.jpg" To remain in the hero section but should maintain it's properties. I dont need it bigger than it's already is. -->
       <div class="hero-visual">
         <div class="hero-blob"></div>
         <div class="hero-code-window">
@@ -123,7 +129,7 @@
         </div>
         <div class="hero-float-card card-1">
           <span class="hero-float-icon"></span>
-          <span class="green"><img src="touch.png" alt="touch"></span>&nbsp;darkMode = "BETTER EXPERIENCE"
+          <span class="green"><img src="touch.png" alt="touch"></span>&nbsp;.DarkMode:<span style="color: rgb(207, 136, 43);">better-experience</span>;
         </div>
         
         <div class="hero-float-card card-2">
@@ -136,6 +142,7 @@
           <img src="hero.jpg" alt="Hero visual" class="hero-overlay-img">
         </div>
       </div>
+    </div>
     </div>
   </section>
 
@@ -182,12 +189,11 @@
     <div class="services-grid">
 
       <!-- WEBSITE DESIGN -->
-       <!-- Change the content to read about website design instead of redesign -->
       <div class="service-card reveal d1">
-        <img class="service-card-img" src="https://i.pinimg.com/736x/73/2f/6d/732f6dbac1eadd8c7a3b2d4775344a75.jpg" alt="Redesign">
+        <img class="service-card-img" src="website-design.jpg" alt="Redesign">
         <div class="service-card-body">
           <span class="service-icon"><img src="graphic-design.png" alt="redesign"></span>
-          <h3>Website Redesign</h3>
+          <h3 style=" width: fit-content;">Web Design <span class="resign-amp">& </span> Redesign</h3>
           <p>Your old website is embarrassing you? We redesign and rebuild it into something you're actually proud to share.</p>
         </div>
       </div>
@@ -197,7 +203,7 @@
         <img class="service-card-img" src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80" alt="Responsive Design">
         <div class="service-card-body">
           <span class="service-icon"><img src="web-design.png" alt="responsive design"></span>
-          <h3>Responsive Design</h3>
+          <h3>Responsive Designs</h3>
           <p>Every site we build works flawlessly on phones, tablets, and desktops. Mobile-first is not a feature — it's our standard.</p>
         </div>
       </div>
@@ -351,7 +357,6 @@
   </section>
 
   <!-- ===== COURSES ===== -->
-   <!-- in each section card include a link to a page relevant to the topic that the user wants to pursue -->
   <section class="courses-section">
     <div class="section-header reveal">
       <div class="section-tag">Learn With <span title="Casual Code Studios">C.C.S</span></div>
@@ -361,42 +366,66 @@
     <div class="courses-grid">
       <!-- HTML FUNDAMENTALS -->
       <div class="course-card reveal d1">
-        <div class="course-icon"><img src="html.png" alt="html logo"></div>
+      <div>
+          <div class="course-icon"><img src="html.png" alt="html logo"></div>
         <span class="badge badge-green course-level">Beginner</span>
+      </div>
+      <div class="course-text">
         <h3>HTML Fundamentals</h3>
         <p>Learn the backbone of the web. Structure pages, use semantic elements, and understand how browsers work.</p>
         <div class="course-meta">
           <span>⏱ 2 Weeks</span>
           <span>📋 12 Lessons</span>
-          <span>🆓 Buy Coffee</span>
+          <span style="display: flex; gap: .5rem;"><img src="dollar.png" alt="dollar-gold coin" style="width: 16px; height: 16px;">Coffee</span>
         </div>
-        <a href="html-course.html" target="_blank" rel="noopener noreferrer" class="course-btn">
-          Start Learning
+        <a href="html-course.html" target="_blank" rel="noopener noreferrer" class="course-btn html">
+          1st Step
         </a>
       </div>
-      <!-- CSS DESIGN  -->
+
+      </div>
+
+      <!-- CSS BASICS -->
       <div class="course-card reveal d2">
+      <div>
         <div class="course-icon"><img src="text.png" alt="css icon"></div>
         <span class="badge badge-yellow course-level">Beginner+</span>
+      </div>
+      <div class="course-text">
         <h3>CSS & Design Basics</h3>
         <p>Style your pages beautifully. Master flexbox, grid, animations, and responsive design from scratch.</p>
         <div class="course-meta">
           <span>⏱ 3 Weeks</span>
           <span>📋 18 Lessons</span>
-          <span>🆓 Buy Coffee</span>
+          <span style="display: flex; gap: .5rem;"><img src="dollar.png" alt="dollar-gold coin" style="width: 16px;height: 16px;">Coffee</span>
         </div>
+        <a href="html-course.html" target="_blank" rel="noopener noreferrer" class="course-btn css">
+          Beauty
+        </a>
       </div>
-      <!-- JVASCRIPT ESSENTIALS -->
+
+      </div>
+
+
+      <!-- JAVASCRIPT ESSENTIALS -->
       <div class="course-card reveal d3">
-        <div class="course-icon"><img src="js.png" alt="javascript logo"></div>
+      <div>
+       <div class="course-icon"><img src="js.png" alt="javascript logo"></div>
         <span class="badge badge-orange course-level">Intermediate</span>
+      </div>
+      <div class="course-text">
         <h3>JavaScript Essentials</h3>
         <p>Bring your pages to life. DOM manipulation, events, fetch API, and your first interactive projects.</p>
         <div class="course-meta">
           <span>⏱ 4 Weeks</span>
           <span>📋 24 Lessons</span>
-          <span>💰 KSH 2,500</span>
+          <span style="display: flex; gap: .5rem;"><img src="dollar.png" alt="dollar-gold coin" style="width: 16px; height: 16px;">Coffee</span>
         </div>
+        <a href="html-course.html" target="_blank" rel="noopener noreferrer" class="course-btn js" >
+          Interact
+        </a>
+      </div>
+
       </div>
 
     </div>
