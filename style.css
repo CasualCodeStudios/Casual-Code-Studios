@@ -1283,6 +1283,7 @@ select.form-input {
   border-color: var(--border-red);
   transform: translateY(-8px);
   box-shadow: var(--shadow-red);
+  clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
 }
 .service-card:hover .service-card-img {
   opacity: 1;
