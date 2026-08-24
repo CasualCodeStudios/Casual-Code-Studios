@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /coming-soon.html
+
+Sitemap: https://casualcodestudios.co.ke/sitemap.xml
