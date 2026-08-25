@@ -917,7 +917,6 @@ select.form-input {
   color: var(--text);
   margin-bottom: 2rem;
   opacity: 0;
-  text-shadow: 0 -2px 2px rgba(255, 255, 255, 0.8);
   animation: fade-up 0.8s 0.2s var(--ease) forwards;
 }
 .hero-h1 .brand-name {
